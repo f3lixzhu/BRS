@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="row mb-3 mt-3 text-right">
+                    <div class="col-sm-5">
+                        <h4 class="m-0"><b>Aging Report</b></h4>
+                    </div>
+                </div>
+                <div class="row mt-5">
+                    <div class="col-md-2">
+                        Locations :
+                    </div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("locparam", ViewBag.LocationsSelectList as SelectList, "Select Field", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-2">
+                        Dimension :
+                    </div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("dimsparam", ViewBag.DimensionParamSelectList as SelectList, "Select Field", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-2">
+                        Data :
+                    </div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("dataparam", ViewBag.DataParamSelectList as SelectList, "Select Field", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="row mt-5">
+                    <div class="col-md-4">
+                        <input type="submit" id="btnGenerate" class="btn btn-primary" value="Load Report" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

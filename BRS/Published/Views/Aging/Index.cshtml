@@ -1,0 +1,175 @@
+﻿@model BRS.Models.AgingData
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-4 text-right">
+            <div class="col-sm-5">
+                <h5 class="m-0">Aging Inventory</h5>
+            </div>
+        </div>
+        @using (Html.BeginForm(null, "Aging", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <div class="row mb-3">
+                <div class="col-sm-1">
+                    Search :
+                </div>
+                <div class="col-sm-2">
+                    @Html.DropDownListFor(m => m.searchField, ViewBag.ItemSearchSelectList as SelectList, "Select Field", new { @class = "form-control" })
+                </div>
+                <div class="col-sm-2">
+                    @Html.EditorFor(m => m.searchValue, new { HtmlAttributes = new { @class = "form-control", placeholder = "enter search value" } })
+                </div>
+                <div class="col-sm-4">
+                    <input type="submit" id="button" name="ItemsSearch" value="Search" class="btn btn-primary" />&nbsp;
+                    <input type="submit" value="Clear Filter" name="ClearFilter" class="btn btn-primary" />
+                </div>
+            </div>
+
+            <div class="card-body">
+                <fieldset>
+                    <div class="row mb-3">
+                        <input type="button" value="Upload" class="btn btn-warning" data-toggle="modal" data-target="#myBox" />
+                    </div>
+                    <table class="table table-responsive text-nowrap table-striped">
+                        <thead>
+                            <tr>
+                                <th>@Html.ActionLink("RELEASE DATE", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortReleaseDateParameter })</th>
+                                <th>@Html.ActionLink("LOCATION", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortLocationParameter })</th>
+                                <th>@Html.ActionLink("BARCODE", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortBarcodeParameter })</th>
+                                <th>@Html.ActionLink("QUANTITY", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortQuantityParameter })</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (System.Data.DataRow item in Model.dtAgingList.Rows)
+                            {
+                                <tr>
+                                    <td>@String.Format("{0:dd-MM-yyyy}", item["ReleaseDate"])</td>
+                                    <td>@item["Locations"]</td>
+                                    <td>@item["Barcode"]</td>
+                                    <td>@String.Format("{0:#,##0}", item["Quantity"])</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <!-- Paging -->
+                    @if (Model.pager.EndPage > 1)
+                    {
+                        <ul class="pagination">
+                            <!--If Current page is not the First Page, we will show Button/Link to go First or on Previous page-->
+                            @if (Model.pager.CurrentPage > 1)
+                            {
+                                <li>
+                                    <a href="~/Article/Index">First</a>
+                                </li>
+                                <li>
+                                    <a href="~/Article/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@(Model.pager.CurrentPage - 1)">Previous</a>
+                                </li>
+                            }
+                            <!--Paging from StartPage to the end Page-->
+                            @for (var page = Model.pager.StartPage; page <= Model.pager.EndPage; page++)
+                            {
+                                <li class="@(page == Model.pager.CurrentPage ? "active" : "")">
+                                    <a href="~/Article/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@page">@page</a>
+                                </li>
+                            }
+                            <!--If Current Page is not the Last Page then show Next and Last Button/link on Paging-->
+                            @if (Model.pager.CurrentPage < Model.pager.TotalPages)
+                            {
+                                <li>
+                                    <a href="~/Article/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@(Model.pager.CurrentPage + 1)">Next</a>
+                                </li>
+                                <li>
+                                    <a href="~/Article/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@Model.pager.TotalPages">Last</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </fieldset>
+            </div>
+            <div class="modal fade" id="myBox">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="card card-blue">
+                            <div class="card-header">
+                                <h6 class="card-title">Upload Aging Inventory</h6>
+                            </div>
+                            <div class="card-body">
+                                <fieldset>
+                                    <div class="row">
+                                        <div class="col-md-7">
+                                            <div class="row">
+                                                @Html.TextBox("file", "", new { type = "file" })
+                                            </div>
+                                            <div class="row mt-4">
+                                                <input type="submit" value="Upload" name="UploadFile" class="btn btn-warning" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            @if (TempData["ErrMessage"] != null)
+                                            {
+                                                <div class="row">
+                                                    <div class="alert alert-danger">
+                                                        <Strong>Error !</Strong> @TempData["ErrMessage"]
+                                                    </div>
+                                                </div>
+                                                if (TempData["showButton"] != null)
+                                                {
+                                                    <div class="row">
+                                                        <input type="button" value="View Items" class="btn btn-danger" data-toggle="modal" data-target="#itemBox" />
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="itemBox">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="card card-blue">
+                            <div class="card-header">
+                                <h6 class="card-title">Item List Not In Master</h6>
+                            </div>
+                            <div class="card-body">
+                                <fieldset>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <table class="table table-hover text-nowrap table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>BARCODE</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var barcode in ViewBag.ItemResult.Barcodes)
+                                                    {
+                                                        <tr>
+                                                            <td>@barcode</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="overlay">
+    <div class="cv-spinner">
+        <span class="spinner"></span>
+    </div>
+</div>

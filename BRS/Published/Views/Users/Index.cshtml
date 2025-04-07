@@ -1,0 +1,221 @@
+﻿@model BRS.Models.UserLibrary.UserManagement
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@section scripts{
+    <script type="text/javascript">
+        $("body").on("click", "#btnReset", function () {
+            $("#hdUserId").val($(this).data("item"));
+        });
+    </script>
+}
+
+@using (Html.BeginForm(null, "Users", FormMethod.Post))
+{
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-4 text-right">
+                <div class="col-sm-5">
+                    <h5 class="m-0">User Management</h5>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-1">
+                    Search :
+                </div>
+                <div class="col-sm-2">
+                    @Html.DropDownListFor(m => m.searchFieldUser, ViewBag.UserSearchSelectList as SelectList, "Select Field", new { @class = "form-control" })
+                </div>
+                <div class="col-sm-2">
+                    @Html.EditorFor(m => m.searchValueUser, new { HtmlAttributes = new { @class = "form-control", placeholder = "enter search value" } })
+                </div>
+                <div class="col-sm-4">
+                    <input type="submit" id="button" name="UsersSearch" value="Search" class="btn btn-primary" />&nbsp;
+                    <input type="submit" id="button" name="ClearFilter" value="Clear Filter" class="btn btn-primary" />
+                </div>
+            </div>
+            <div class="card-body">
+                <fieldset>
+                    <div class="row mb-3">
+                        <input type="button" value="Add User" class="btn btn-warning" data-toggle="modal" data-target="#myBox" />
+                    </div>
+                    <table class="table table-responsive text-nowrap table-striped">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>USER ID</th>
+                                <th>USERNAME</th>
+                                <th style="display:none;">BRAND ID</th>
+                                <th>BRAND NAME</th>
+                                <th>ACTIVE</th>
+                                <th>REGISTRATION TIME</th>
+                                <th>LAST LOGIN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @Html.Hidden("UserId", null, new { @id = "hdUserId" })
+                            @foreach (System.Data.DataRow item in Model.dtUserList.Rows)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="button" value="Edit" class="btn btn-primary usrDetails"
+                                               data-item="@String.Concat(item["UserId"], ";", item["UserName"], ";", item["BrandId"], ";", item["Status"])"
+                                               data-toggle="modal" data-target="#myBox2" />
+                                        <input type="submit" id="btnReset" value="Reset" title="Reset Password" data-item="@item["UserId"]" class="btn btn-primary" onclick="sendForm(this,event,'ResetPassword');" />
+                                    </td>
+                                    <td>@item["UserId"]</td>
+                                    <td>@item["UserName"]</td>
+                                    <td style="display:none;">@item["BrandId"]</td>
+                                    <td>@item["BrandName"]</td>
+                                    <td>@item["Status"]</td>
+                                    <td>@String.Format("{0:dd-MM-yyyy HH:mm}", item["RegistrationTime"])</td>
+                                    <td>@String.Format("{0:dd-MM-yyyy HH:mm}", item["LastLogin"] ?? string.Empty)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <!-- Paging -->
+                    @if (Model.pager.EndPage > 1)
+                    {
+                        <ul class="pagination">
+                            <!--If Current page is not the First Page, we will show Button/Link to go First or on Previous page-->
+                            @if (Model.pager.CurrentPage > 1)
+                            {
+                                <li>
+                                    <a href="~/User/Index">First</a>
+                                </li>
+                                <li>
+                                    <a href="~/User/Index?page=@(Model.pager.CurrentPage - 1)">Previous</a>
+                                </li>
+                            }
+                            <!--Paging from StartPage to the end Page-->
+                            @for (var page = Model.pager.StartPage; page <= Model.pager.EndPage; page++)
+                            {
+                                <li class="@(page == Model.pager.CurrentPage ? "active" : "")">
+                                    <a href="~/User/Index?page=@page">@page</a>
+                                </li>
+                            }
+                            <!--If Current Page is not the Last Page then show Next and Last Button/link on Paging-->
+                            @if (Model.pager.CurrentPage < Model.pager.TotalPages)
+                            {
+                                <li>
+                                    <a href="~/User/Index?page=@(Model.pager.CurrentPage + 1)">Next</a>
+                                </li>
+                                <li>
+                                    <a href="~/User/Index?page=@Model.pager.TotalPages">Last</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myBox">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="card card-blue">
+                    <div class="card-header">
+                        <h6 class="card-title">Register User</h6>
+                    </div>
+                    <div class="card-body">
+                        <fieldset>
+                            <div class="form-group row mb-2">
+                                <h6 class="col-md-2 ml-2 col-form-label">User Id :</h6>
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        @Html.EditorFor(model => model.userId, new { htmlAttributes = new { @class = "form-control", style = "width: 300px", @id = "usr_userId" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-2">
+                                <h6 class="col-md-2 ml-2 col-form-label">Username :</h6>
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        @Html.EditorFor(model => model.userName, new { htmlAttributes = new { @class = "form-control", style = "width: 300px", @id = "usr_userName" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-2">
+                                <h6 class="col-md-2 ml-2 col-form-label">Password :</h6>
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        @Html.EditorFor(model => model.password, new { htmlAttributes = new { @class = "form-control", placeholder = "enter password", type = "password", style = "width: 300px" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-2">
+                                <h6 class="col-md-2 ml-2 col-form-label">Brand :</h6>
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        @Html.DropDownListFor(m => m.brandId, ViewBag.UserBrandSelectList as SelectList, "Select Field", new { @class = "form-control", @id = "usr_brandId" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row ml-2 mt-5 mb-2">
+                                <input type="submit" value="Create" class="btn btn-primary" onclick="sendForm(this,event,'Create');" />&nbsp;&nbsp;
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myBox2">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="card card-blue">
+                    <div class="card-header">
+                        <h6 class="card-title">Update User</h6>
+                    </div>
+                    <div class="card-body">
+                        <fieldset>
+                            <div class="form-group row mb-2">
+                                <h6 class="col-md-2 ml-2 col-form-label">User Id :</h6>
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        @Html.EditorFor(model => model.userId, new { htmlAttributes = new { @class = "form-control", style = "width: 300px", @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-2">
+                                <h6 class="col-md-2 ml-2 col-form-label">Username :</h6>
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        @Html.EditorFor(model => model.userName, new { htmlAttributes = new { @class = "form-control", style = "width: 300px" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-2">
+                                <h6 class="col-md-2 ml-2 col-form-label">Brand :</h6>
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        @Html.DropDownListFor(m => m.brandId, ViewBag.UserBrandSelectList as SelectList, "Select Field", new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row mt-3 mb-2">
+                                <div class="col-md-5">
+                                    @Html.CheckBoxFor(m => m.active, new { HtmlAttributes = new { @class = "form-control" } })
+                                    <label for="active">&nbsp;&nbsp;Active</label>
+                                </div>
+                            </div>
+                            <div class="row ml-2 mt-5 mb-2">
+                                <input type="submit" value="Update" class="btn btn-primary" onclick="sendForm(this,event,'Update');" />&nbsp;&nbsp;
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div id="overlay">
+    <div class="cv-spinner">
+        <span class="spinner"></span>
+    </div>
+</div>

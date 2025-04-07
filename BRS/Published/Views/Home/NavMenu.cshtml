@@ -1,0 +1,41 @@
+﻿<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="@Url.Action("Index","Home")" class="brand-link">
+        <center><span class="brand-text">@ViewBag.brandName</span></center>
+    </a>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <!-- Add icons to the links using the .nav-icon class
+                with font-awesome or any other icon font library -->
+                @foreach (var category in ViewBag.UserModuleCategory)
+                {
+                    <li class="nav-item @category.MenuCategoryCss" id="@category.MenuCategoryId">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-circle"></i>
+                            <p>
+                                @category.ModuleCategory
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            @foreach (var module in category.UserModules)
+                            {
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Index", @module.Url)" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>@module.ModuleName</p>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>
