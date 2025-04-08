@@ -120,7 +120,8 @@
                                         <div class="col-md-7">
                                             @Html.TextBox("file", "", new { type = "file" })
                                             <div class="row mt-4">
-                                                <input type="submit" value="Upload" name="UploadFile" class="btn btn-warning" />
+                                                <input type="submit" value="Upload" name="UploadFile" class="btn btn-warning" />&nbsp;&nbsp;
+                                                @Html.ActionLink("Download Template", "Download", "Items")
                                             </div>
                                         </div>
                                         <div class="col-md-5">

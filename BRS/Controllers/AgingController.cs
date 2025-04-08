@@ -197,5 +197,17 @@ namespace BRS.Controllers
                 return RedirectToAction("Index", "Aging", new { actions = "UploadFile" });
             }
         }
+
+        public ActionResult Download()
+        {
+            string _path = @"../UploadedFiles/FileUploadFormat/Template Aging.xlsx";
+            if (System.IO.File.Exists(Server.MapPath(_path)))
+            {
+                byte[] bytes = System.IO.File.ReadAllBytes(Server.MapPath(_path));
+                return File(bytes, System.Net.Mime.MediaTypeNames.Application.Octet, "TemplateAging.xlsx");
+            }
+
+            return RedirectToAction("Index", "Aging", new { actions = "Download" });
+        }
     }
 }

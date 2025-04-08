@@ -227,5 +227,17 @@ namespace BRS.Controllers
 
             return RedirectToAction("Index", "Items", new { actions = "Delete" });
         }
+
+        public ActionResult Download()
+        {
+            string _path = @"../UploadedFiles/FileUploadFormat/Template Item Master.xlsx";
+            if (System.IO.File.Exists(Server.MapPath(_path)))
+            {
+                byte[] bytes = System.IO.File.ReadAllBytes(Server.MapPath(_path));
+                return File(bytes, System.Net.Mime.MediaTypeNames.Application.Octet, "TemplateItemMaster.xlsx");
+            }
+
+            return RedirectToAction("Index", "Items", new { actions = "Download" });
+        }
     }
 }
