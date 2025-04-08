@@ -42,14 +42,20 @@
                     <div class="row mb-3">
                         <input type="button" value="Upload" class="btn btn-warning" data-toggle="modal" data-target="#myBox" />
                     </div>
+                    <p style="color:red">*You can scroll to the right with keyboard</p>
                     <table class="table table-responsive text-nowrap table-striped">
                         <thead>
                             <tr>
                                 <th></th>
                                 <th>@Html.ActionLink("BARCODE", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortBarcodeParameter })</th>
+                                <th>@Html.ActionLink("GENDER", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortGenderParameter })</th>
+                                <th>@Html.ActionLink("ITEM TYPE", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortItemTypeParameter })</th>
                                 <th>@Html.ActionLink("CATEGORY", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortCategoryParameter })</th>
                                 <th>@Html.ActionLink("DESCRIPTION", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortDescriptionParameter })</th>
+                                <th>@Html.ActionLink("COLOR", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortColorParameter })</th>
+                                <th>@Html.ActionLink("SIZE", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortSizeParameter })</th>
                                 <th>@Html.ActionLink("FIT", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortFitParameter })</th>
+                                <th>@Html.ActionLink("SEASON YEAR", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortSeasonYearParameter })</th>
                                 <th>@Html.ActionLink("TAG PRICE", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortTagPriceParameter })</th>
                                 <th>@Html.ActionLink("RETAIL PRICE", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortRetailPriceParameter })</th>
                             </tr>
@@ -63,9 +69,14 @@
                                         <input type="submit" id="btnDelete" title="@item["Barcode"]" value="Delete" class="btn btn-danger" onclick="sendForm(this,event,'DeleteItem');" />
                                     </td>
                                     <td>@item["Barcode"]</td>
+                                    <td>@item["Gender"]</td>
+                                    <td>@item["ItemType"]</td>
                                     <td>@item["Category"]</td>
                                     <td>@item["Description"]</td>
+                                    <td>@item["Color"]</td>
+                                    <td>@item["Size"]</td>
                                     <td>@item["Fit"]</td>
+                                    <td>@item["SeasonYear"]</td>
                                     <td>@String.Format("{0:#,##0.##}", item["TagPrice"])</td>
                                     <td>@String.Format("{0:#,##0.##}", item["RetailPrice"])</td>
                                 </tr>
@@ -120,7 +131,7 @@
                                         <div class="col-md-7">
                                             @Html.TextBox("file", "", new { type = "file" })
                                             <div class="row mt-4">
-                                                <input type="submit" value="Upload" name="UploadFile" class="btn btn-warning" />&nbsp;&nbsp;
+                                                <input type="submit" value="Upload" name="UploadFile" class="btn btn-warning" />&nbsp;&nbsp;&nbsp;
                                                 @Html.ActionLink("Download Template", "Download", "Items")
                                             </div>
                                         </div>

@@ -31,9 +31,14 @@ namespace BRS.Controllers
         public ActionResult Index(string searchField = "", string searchValue = "", string sortBy = "", int page = 1, string actions = "")
         {
             ViewBag.SortBarcodeParameter = sortBy == "BARCODE" ? "BARCODE DESC" : "BARCODE";
+            ViewBag.SortGenderParameter = sortBy == "GENDER" ? "GENDER DESC" : "GENDER";
+            ViewBag.SortItemTypeParameter = sortBy == "ITEMTYPE" ? "ITEMTYPE DESC" : "ITEMTYPE";
             ViewBag.SortCategoryParameter = sortBy == "CATEGORY" ? "CATEGORY DESC" : "CATEGORY";
             ViewBag.SortDescriptionParameter = sortBy == "DESCRIPTION" ? "DESCRIPTION DESC" : "DESCRIPTION";
-            ViewBag.SortDescriptionParameter = sortBy == "FIT" ? "FIT DESC" : "FIT";
+            ViewBag.SortColorParameter = sortBy == "COLOR" ? "COLOR DESC" : "COLOR";
+            ViewBag.SortSizeParameter = sortBy == "SIZE" ? "SIZE DESC" : "SIZE";
+            ViewBag.SortFitParameter = sortBy == "FIT" ? "FIT DESC" : "FIT";
+            ViewBag.SortSeasonYearParameter = sortBy == "SEASONYEAR" ? "SEASONYEAR DESC" : "SEASONYEAR";
             ViewBag.SortTagPriceParameter = sortBy == "TAGPRICE" ? "TAGPRICE DESC" : "TAGPRICE";
             ViewBag.SortRetailPriceParameter = sortBy == "RETAILPRICE" ? "RETAILPRICE DESC" : "RETAILPRICE";
 
@@ -109,6 +114,18 @@ namespace BRS.Controllers
                 case "BARCODE DESC":
                     sort = "Barcode DESC";
                     break;
+                case "GENDER DESC":
+                    sort = "Gender DESC";
+                    break;
+                case "GENDER":
+                    sort = "Gender ASC";
+                    break;
+                case "ITEMTYPE DESC":
+                    sort = "ItemType DESC";
+                    break;
+                case "ITEMTYPE":
+                    sort = "ItemType ASC";
+                    break;
                 case "CATEGORY DESC":
                     sort = "Category DESC";
                     break;
@@ -121,11 +138,29 @@ namespace BRS.Controllers
                 case "DESCRIPTION":
                     sort = "Description ASC";
                     break;
+                case "COLOR DESC":
+                    sort = "Color DESC";
+                    break;
+                case "COLOR":
+                    sort = "Color ASC";
+                    break;
+                case "SIZE DESC":
+                    sort = "Size DESC";
+                    break;
+                case "SIZE":
+                    sort = "Size ASC";
+                    break;
                 case "FIT DESC":
                     sort = "Fit DESC";
                     break;
                 case "FIT":
                     sort = "Fit ASC";
+                    break;
+                case "SEASONYEAR DESC":
+                    sort = "SeasonYear DESC";
+                    break;
+                case "SEASONYEAR":
+                    sort = "SeasonYear ASC";
                     break;
                 case "TAGPRICE DESC":
                     sort = "TagPrice DESC";
@@ -174,6 +209,9 @@ namespace BRS.Controllers
         {
             try
             {
+                if (file == null)
+                    throw new Exception("Please select file to upload first!");
+
                 if (file.ContentLength > 0)
                 {
                     string _fileName = Path.GetFileName(file.FileName);

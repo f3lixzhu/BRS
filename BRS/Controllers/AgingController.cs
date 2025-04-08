@@ -165,6 +165,9 @@ namespace BRS.Controllers
         {
             try
             {
+                if (file == null)
+                    throw new Exception("Please select file to upload first!");
+
                 if (file.ContentLength > 0)
                 {
                     string _fileName = Path.GetFileName(file.FileName);
