@@ -10,6 +10,7 @@ using BRS.ViewModels;
 using BRS.Dictionary;
 using System.Reflection;
 using System.IO;
+using ClosedXML.Excel;
 
 namespace BRS.Controllers
 {
@@ -30,6 +31,7 @@ namespace BRS.Controllers
         // GET: Aging
         public ActionResult Index(string searchField = "", string searchValue = "", string sortBy = "", int page = 1, string actions = "")
         {
+            ViewBag.SortPeriodParameter = sortBy == "PERIOD" ? "PERIOD ASC" : "PERIOD";
             ViewBag.SortReleaseDateParameter = sortBy == "RELEASEDATE" ? "RELEASEDATE DESC" : "RELEASEDATE";
             ViewBag.SortLocationParameter = sortBy == "LOCATION" ? "LOCATION DESC" : "LOCATION";
             ViewBag.SortBarcodeParameter = sortBy == "BARCODE" ? "BARCODE DESC" : "BARCODE";
@@ -47,11 +49,12 @@ namespace BRS.Controllers
                 if (TempData.Peek("_aging") is null)
                 {
                     string where = "";
-                    DataSet ds = TransDA.GetAging(page, where, "ReleaseDate ASC");
+                    DataSet ds = TransDA.GetAging(page, where, "Period DESC");
                     agingData = new AgingData()
                     {
                         dtAgingList = ds.Tables[0],
-                        pager = new Pager((ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0) ? Convert.ToInt32(ds.Tables[1].Rows[0]["TotalRecords"]) : 0, 1, Convert.ToInt32(ConfigurationManager.AppSettings["PageSize"]))
+                        pager = new Pager((ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0) ? Convert.ToInt32(ds.Tables[1].Rows[0]["TotalRecords"]) : 0, 1, Convert.ToInt32(ConfigurationManager.AppSettings["PageSize"])),
+                        YMDate = DateTime.Now
                     };
 
                     TempData["_aging"] = agingData;
@@ -78,10 +81,6 @@ namespace BRS.Controllers
                 ViewBag.searchField = searchField;
                 ViewBag.searchValue = searchValue;
                 ViewBag.ItemSearchSelectList = new SelectList(AgingSearch.AgingSearchDictionary, "Key", "Value");
-                if (TempData["ItemResult"] == null)
-                    ViewBag.ItemResult = new ItemResult();
-                else
-                    ViewBag.ItemResult = TempData["ItemResult"];
 
                 return View(agingData);
             }
@@ -109,8 +108,14 @@ namespace BRS.Controllers
             string sort = string.Empty;
             switch (sortBy)
             {
+                case "PERIOD ASC":
+                    sort = "Period ASC";
+                    break;
                 case "RELEASEDATE DESC":
                     sort = "ReleaseDate DESC";
+                    break;
+                case "RELEASEDATE":
+                    sort = "ReleaseDate ASC";
                     break;
                 case "LOCATION DESC":
                     sort = "Locations DESC";
@@ -131,7 +136,7 @@ namespace BRS.Controllers
                     sort = "Quantity ASC";
                     break;
                 default:
-                    sort = "ReleaseDate ASC";
+                    sort = "Period DESC";
                     break;
             }
 
@@ -161,7 +166,7 @@ namespace BRS.Controllers
 
         [HttpPost]
         [ButtonNameAction]
-        public ActionResult UploadFile(HttpPostedFileBase file)
+        public ActionResult UploadFile(HttpPostedFileBase file, FormCollection fc)
         {
             try
             {
@@ -170,14 +175,15 @@ namespace BRS.Controllers
 
                 if (file.ContentLength > 0)
                 {
+                    string period = fc["YMDate"].Replace(".", "");
                     string _fileName = Path.GetFileName(file.FileName);
                     string _path = Path.Combine(Server.MapPath("~/UploadedFiles"), _fileName);
                     file.SaveAs(_path);
                     string _fileExt = Path.GetExtension(_path);
                     TRANS_DA TransDA = new TRANS_DA();
                     int uploadRows = 0;
-                    ItemResult itemResult = new ItemResult();
-                    string errMessage = TransDA.uploadAging(_fileExt, _path, LoginData.userId, out uploadRows, out itemResult);
+                    DataTable itemResult = new DataTable();
+                    string errMessage = TransDA.uploadAging(period, _fileExt, _path, LoginData.userId, out uploadRows, out itemResult);
                     if (errMessage.Length > 0)
                     {
                         TempData["ItemResult"] = itemResult;
@@ -199,6 +205,30 @@ namespace BRS.Controllers
 
                 return RedirectToAction("Index", "Aging", new { actions = "UploadFile" });
             }
+        }
+
+        [HttpPost]
+        [ButtonNameAction]
+        public ActionResult ExportItems()
+        {
+            if (TempData.Peek("ItemResult") != null)
+            {
+                DataTable dt = (DataTable)TempData["ItemResult"];
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                string fileName = "ItemsNotInMaster_" + DateTime.Now.ToString("dd-MM-yyyy") + ".xlsx";
+
+                using (XLWorkbook wb = new XLWorkbook())
+                {
+                    wb.Worksheets.Add(dt);
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        wb.SaveAs(stream);
+                        return File(stream.ToArray(), contentType, fileName);
+                    }
+                }
+            }
+
+            return RedirectToAction("Index", "Aging", new { actions = "Export" });
         }
 
         public ActionResult Download()

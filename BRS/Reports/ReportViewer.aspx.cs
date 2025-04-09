@@ -46,10 +46,12 @@ namespace BRS.Reports
             ReportViewer1.LocalReport.DataSources.Add(new ReportDataSource(dsName, data));
             ReportViewer1.LocalReport.ReportPath = Server.MapPath($@"rpt/{reportparam.RptFileName}");
             ReportViewer1.ZoomMode = ZoomMode.FullPage;
-            ReportParameter[] parameters = new ReportParameter[3];
+            ReportParameter[] parameters = new ReportParameter[5];
             parameters[0] = new ReportParameter("prmRowField", dparam, true);
             parameters[1] = new ReportParameter("prmDataField", dtparam, true);
             parameters[2] = new ReportParameter("prmLocation", reportparam.prmLocation);
+            parameters[3] = new ReportParameter("prmPeriod", reportparam.period);
+            parameters[4] = new ReportParameter("prmFilter", reportparam.filter);
             ReportViewer1.LocalReport.SetParameters(parameters);
             ReportViewer1.DataBind();
             ReportViewer1.LocalReport.Refresh();
@@ -59,7 +61,7 @@ namespace BRS.Reports
         {
             ReportViewer1.LocalReport.DataSources.Clear();
             ReportViewer1.LocalReport.DataSources.Add(new ReportDataSource("", new DataTable()));
-            ReportViewer1.LocalReport.ReportPath = Server.MapPath("~" + $@"Reports/rpt/blank.rdlc");
+            ReportViewer1.LocalReport.ReportPath = Server.MapPath($@"rpt/blank.rdlc");
             ReportViewer1.ZoomMode = ZoomMode.FullPage;
             ReportViewer1.DataBind();
             ReportViewer1.LocalReport.Refresh();

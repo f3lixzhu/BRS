@@ -14,5 +14,7 @@ namespace BRS.Models
         public bool IsHasParams { get; set; }
         public string DataSetName { get; internal set; }
         public string prmLocation { get; set; }
+        public string period { get; set; }
+        public string filter { get; set; }
     }
 }

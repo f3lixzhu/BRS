@@ -58,6 +58,7 @@
                                 <th>@Html.ActionLink("SEASON YEAR", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortSeasonYearParameter })</th>
                                 <th>@Html.ActionLink("TAG PRICE", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortTagPriceParameter })</th>
                                 <th>@Html.ActionLink("RETAIL PRICE", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortRetailPriceParameter })</th>
+                                <th>@Html.ActionLink("COGS", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortCOGSParameter })</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,6 +80,7 @@
                                     <td>@item["SeasonYear"]</td>
                                     <td>@String.Format("{0:#,##0.##}", item["TagPrice"])</td>
                                     <td>@String.Format("{0:#,##0.##}", item["RetailPrice"])</td>
+                                    <td>@String.Format("{0:#,##0.##}", item["COGS"])</td>
                                 </tr>
                             }
                         </tbody>

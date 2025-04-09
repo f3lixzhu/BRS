@@ -41,6 +41,7 @@ namespace BRS.Controllers
             ViewBag.SortSeasonYearParameter = sortBy == "SEASONYEAR" ? "SEASONYEAR DESC" : "SEASONYEAR";
             ViewBag.SortTagPriceParameter = sortBy == "TAGPRICE" ? "TAGPRICE DESC" : "TAGPRICE";
             ViewBag.SortRetailPriceParameter = sortBy == "RETAILPRICE" ? "RETAILPRICE DESC" : "RETAILPRICE";
+            ViewBag.SortCOGSParameter = sortBy == "COGS" ? "COGS DESC" : "COGS";
 
             if (LoginData.userId is null)
             {
@@ -173,6 +174,12 @@ namespace BRS.Controllers
                     break;
                 case "RETAILPRICE":
                     sort = "RetailPrice ASC";
+                    break;
+                case "COGS DESC":
+                    sort = "COGS DESC";
+                    break;
+                case "COGS":
+                    sort = "COGS ASC";
                     break;
                 default:
                     sort = "Barcode ASC";

@@ -1,4 +1,5 @@
-﻿@{
+﻿@model BRS.Models.AgingData
+@{
     ViewBag.Title = "Index";
 }
 
@@ -12,6 +13,23 @@
                     </div>
                 </div>
                 <div class="row mt-5">
+                    <div class="col-md-2">
+                        Period :
+                    </div>
+                    <div class="col-md-4">
+                        @Html.EditorFor(m => m.YMDate,
+                        new
+                        {
+                            htmlAttributes = new
+                            {
+                                @readonly = "true",
+                                @Value = Model.YMDate.ToString("yyyy.MM"),
+                                @class = "form-control datepickerYM"
+                            }
+                        })
+                    </div>
+                </div>
+                <div class="row mt-4">
                     <div class="col-md-2">
                         Locations :
                     </div>
@@ -33,6 +51,17 @@
                     </div>
                     <div class="col-md-4">
                         @Html.DropDownList("dataparam", ViewBag.DataParamSelectList as SelectList, "Select Field", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-sm-2">
+                        Filter :
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.DropDownListFor(m => m.searchField, ViewBag.DimensionParamSelectList as SelectList, "Select Field", new { @class = "form-control" })
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.EditorFor(m => m.searchValue, new { HtmlAttributes = new { @class = "form-control", placeholder = "enter search value" } })
                     </div>
                 </div>
                 <div class="row mt-5">

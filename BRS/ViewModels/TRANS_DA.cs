@@ -66,7 +66,7 @@ namespace BRS.ViewModels
                     }
 
                     DataTable dtExcelData = new DataTable();
-                    dtExcelData.Columns.AddRange(new DataColumn[13] {
+                    dtExcelData.Columns.AddRange(new DataColumn[14] {
                         new DataColumn("BARCODE", typeof(string)),
                         new DataColumn("BRAND", typeof(string)),
                         new DataColumn("GENDER", typeof(string)),
@@ -79,12 +79,25 @@ namespace BRS.ViewModels
                         new DataColumn("SEASON_YEAR", typeof(string)),
                         new DataColumn("BOARD_WH", typeof(string)) { AllowDBNull = true },
                         new DataColumn("TAG_PRICE", typeof(decimal)),
-                        new DataColumn("RETAIL_PRICE", typeof(decimal))
+                        new DataColumn("RETAIL_PRICE", typeof(decimal)),
+                        new DataColumn("COGS", typeof(decimal))
                     });
 
-                    string s_excel_sql = $"SELECT * FROM [{System.IO.Path.GetFileNameWithoutExtension(s_table)}] WHERE ISNULL(TAG_PRICE) = 0";
-                    OleDbCommand command = new OleDbCommand(s_excel_sql, conn);
-                    OleDbDataAdapter da = new OleDbDataAdapter(command);
+                    //cek untuk tag price = null atau tag price = 0
+                    string s_excel_sql;
+                    OleDbCommand command;
+                    OleDbDataAdapter da;
+
+                    s_excel_sql = $"SELECT * FROM [{System.IO.Path.GetFileNameWithoutExtension(s_table)}] WHERE ISNULL(TAG_PRICE) < 0";
+                    command = new OleDbCommand(s_excel_sql, conn);
+                    da = new OleDbDataAdapter(command);
+                    da.Fill(dtExcelData);
+                    if (dtExcelData.Rows.Count > 0)
+                        throw new Exception($"There is {dtExcelData.Rows.Count} data with tag price is null, please fix it first!");
+
+                    s_excel_sql = $"SELECT * FROM [{System.IO.Path.GetFileNameWithoutExtension(s_table)}] WHERE ISNULL(TAG_PRICE) = 0";
+                    command = new OleDbCommand(s_excel_sql, conn);
+                    da = new OleDbDataAdapter(command);
                     da.Fill(dtExcelData);
 
                     if (dtExcelData.Rows.Count > 0)
@@ -138,12 +151,12 @@ namespace BRS.ViewModels
             return ds;
         }
 
-        public virtual string uploadAging(string _fileExt, string _path, string auditUserName, out int uploadRows, out ItemResult itemResult)
+        public virtual string uploadAging(string period, string _fileExt, string _path, string auditUserName, out int uploadRows, out DataTable itemResult)
         {
             string errMessage = string.Empty;
             string connStr = string.Empty;
             uploadRows = 0;
-            itemResult = new ItemResult();
+            itemResult = new DataTable();
 
             if (_fileExt == ".xls" || _fileExt == ".xlsx")
             {
@@ -177,18 +190,31 @@ namespace BRS.ViewModels
                         new DataColumn("QUANTITY", typeof(int))
                     });
 
-                    string s_excel_sql = $"SELECT * FROM [{System.IO.Path.GetFileNameWithoutExtension(s_table)}] WHERE ISNULL(RELEASE_DATE) = 0 and QUANTITY > 0";
-                    OleDbCommand command = new OleDbCommand(s_excel_sql, conn);
-                    OleDbDataAdapter da = new OleDbDataAdapter(command);
+                    string s_excel_sql;
+                    OleDbCommand command;
+                    OleDbDataAdapter da;
+
+                    //cek release date is null
+                    s_excel_sql = $"SELECT * FROM [{System.IO.Path.GetFileNameWithoutExtension(s_table)}] WHERE ISNULL(RELEASE_DATE) < 0";
+                    command = new OleDbCommand(s_excel_sql, conn);
+                    da = new OleDbDataAdapter(command);
+                    da.Fill(dtExcelData);
+
+                    if (dtExcelData.Rows.Count > 0)
+                        throw new Exception($"There is {dtExcelData.Rows.Count} data with release date is null");
+
+                    s_excel_sql = $"SELECT * FROM [{System.IO.Path.GetFileNameWithoutExtension(s_table)}] WHERE ISNULL(RELEASE_DATE) = 0 and QUANTITY > 0";
+                    command = new OleDbCommand(s_excel_sql, conn);
+                    da = new OleDbDataAdapter(command);
                     da.Fill(dtExcelData);
 
                     if (dtExcelData.Rows.Count > 0)
                     {
-                        ItemResult ir = GetItemsNotInMaster(dtExcelData);
-                        if (ir.Barcodes.Count() > 0)
+                        DataTable ir = GetItemsNotInMaster(dtExcelData);
+                        if (ir.Rows.Count > 0)
                         {
                             itemResult = ir;
-                            throw new Exception($"Found {ir.Barcodes.Count()} of {dtExcelData.Rows.Count} barcode not found in master items");
+                            throw new Exception($"Found {ir.Rows.Count} of {dtExcelData.Rows.Count} barcode not found in master items");
                         }
 
                         uploadRows = dtExcelData.Rows.Count;
@@ -196,6 +222,7 @@ namespace BRS.ViewModels
                         using (SqlCommand sqlcom = new SqlCommand("CreateAgingInventory", CnLocal))
                         {
                             sqlcom.CommandType = CommandType.StoredProcedure;
+                            sqlcom.Parameters.AddWithValue("period", period);
                             sqlcom.Parameters.AddWithValue("agingInv", dtExcelData).SqlDbType = SqlDbType.Structured;
                             sqlcom.Parameters.AddWithValue("auditUserName", auditUserName);
                             CnLocal.Open();
@@ -221,23 +248,21 @@ namespace BRS.ViewModels
             return errMessage;
         }
 
-        private ItemResult GetItemsNotInMaster(DataTable dt)
+        private DataTable GetItemsNotInMaster(DataTable dt)
         {
-            ItemResult ir = new ItemResult();
+            DataSet ds = new DataSet();
             using (SqlCommand command = new SqlCommand("dbo.GetItemsNotInMaster", CnLocal))
             {
                 command.Parameters.AddWithValue("agingInv", dt).SqlDbType = SqlDbType.Structured;
                 command.CommandType = CommandType.StoredProcedure;
                 CnLocal.Open();
-                SqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    ir.Barcodes.Add(reader[0].ToString());
-                }
+                SqlDataAdapter adapter = new SqlDataAdapter();
+                adapter.SelectCommand = command;
+                adapter.Fill(ds, "ItemsData");
                 CnLocal.Close();
             }
 
-            return ir;
+            return ds.Tables[0];
         }
 
         public Dictionary<int, string> GetBrandList()
@@ -259,15 +284,17 @@ namespace BRS.ViewModels
             return brandList;
         }
 
-        public virtual DataSet GetAgingReportData(string brand, string locations)
+        public virtual DataSet GetAgingReportData(string period, string locations, string brand, string condition)
         {
             SqlDataAdapter adapter = new SqlDataAdapter();
             DataSet ds = new DataSet();
             using (SqlCommand command = new SqlCommand("dbo.GetAgingReportData", CnLocal))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("Brand", brand);
+                command.Parameters.AddWithValue("Period", period);
                 command.Parameters.AddWithValue("Locations", locations);
+                command.Parameters.AddWithValue("Brand", brand);
+                command.Parameters.AddWithValue("Condition", condition);
                 CnLocal.Open();
 
                 adapter.SelectCommand = command;
@@ -281,6 +308,7 @@ namespace BRS.ViewModels
         public Dictionary<string, string> GetLocationsList()
         {
             Dictionary<string, string> locationList = new Dictionary<string, string>();
+            locationList.Add("ALL", "ALL");
             using (SqlCommand command = new SqlCommand("select distinct RTRIM(Locations) as Locations from dbo.AgingInventory", CnLocal))
             {
                 command.CommandType = CommandType.Text;

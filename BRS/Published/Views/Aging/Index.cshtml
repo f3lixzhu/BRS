@@ -37,6 +37,7 @@
                     <table class="table table-responsive text-nowrap table-striped">
                         <thead>
                             <tr>
+                                <th>@Html.ActionLink("PERIOD", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortPeriodParameter })</th>
                                 <th>@Html.ActionLink("RELEASE DATE", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortReleaseDateParameter })</th>
                                 <th>@Html.ActionLink("LOCATION", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortLocationParameter })</th>
                                 <th>@Html.ActionLink("BARCODE", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortBarcodeParameter })</th>
@@ -47,6 +48,7 @@
                             @foreach (System.Data.DataRow item in Model.dtAgingList.Rows)
                             {
                                 <tr>
+                                    <td>@item["Period"]</td>
                                     <td>@String.Format("{0:dd-MM-yyyy}", item["ReleaseDate"])</td>
                                     <td>@item["Locations"]</td>
                                     <td>@item["Barcode"]</td>
@@ -102,6 +104,23 @@
                                     <div class="row">
                                         <div class="col-md-7">
                                             <div class="row">
+                                                <div class="col-sm-2">
+                                                    Month :
+                                                </div>
+                                                <div class="col-sm-5">
+                                                    @Html.EditorFor(m => m.YMDate,
+                                                     new
+                                                     {
+                                                         htmlAttributes = new
+                                                         {
+                                                             @readonly = "true",
+                                                             @Value = Model.YMDate.ToString("yyyy.MM"),
+                                                             @class = "form-control datepickerYM"
+                                                         }
+                                                     })
+                                                </div>
+                                            </div>
+                                            <div class="row mt-4">
                                                 @Html.TextBox("file", "", new { type = "file" })
                                             </div>
                                             <div class="row mt-4">
@@ -120,44 +139,10 @@
                                                 if (TempData["showButton"] != null)
                                                 {
                                                     <div class="row">
-                                                        <input type="button" value="View Items" class="btn btn-danger" data-toggle="modal" data-target="#itemBox" />
+                                                        <input type="submit" value="Export Items" name="ExportItems" class="btn btn-danger" />
                                                     </div>
                                                 }
                                             }
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="itemBox">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="card card-blue">
-                            <div class="card-header">
-                                <h6 class="card-title">Item List Not In Master</h6>
-                            </div>
-                            <div class="card-body">
-                                <fieldset>
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <table class="table table-hover text-nowrap table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>BARCODE</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach (var barcode in ViewBag.ItemResult.Barcodes)
-                                                    {
-                                                        <tr>
-                                                            <td>@barcode</td>
-                                                        </tr>
-                                                    }
-                                                </tbody>
-                                            </table>
                                         </div>
                                     </div>
                                 </fieldset>

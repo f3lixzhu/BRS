@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace BRS.Models
 {
@@ -12,5 +13,7 @@ namespace BRS.Models
         public string searchValue { get; set; }
         public DataTable dtAgingList { get; set; }
         public Pager pager { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy.MM}", ApplyFormatInEditMode = true)]
+        public DateTime YMDate { get; set; }
     }
 }
