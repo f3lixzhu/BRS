@@ -81,7 +81,8 @@ namespace BRS.Controllers
                 ViewBag.searchField = searchField;
                 ViewBag.searchValue = searchValue;
                 ViewBag.ItemSearchSelectList = new SelectList(AgingSearch.AgingSearchDictionary, "Key", "Value");
-
+                if (agingData.file != null)
+                    ViewBag.FileName = agingData.YMDate.ToString("yyyy.MM") + " - " + agingData.file.FileName;
                 return View(agingData);
             }
         }
@@ -166,30 +167,80 @@ namespace BRS.Controllers
 
         [HttpPost]
         [ButtonNameAction]
-        public ActionResult UploadFile(HttpPostedFileBase file, FormCollection fc)
+        public ActionResult UploadFile(AgingData aging)
         {
             try
             {
-                if (file == null)
+                if (aging.file == null)
                     throw new Exception("Please select file to upload first!");
 
-                if (file.ContentLength > 0)
+                if (aging.file.ContentLength > 0)
                 {
-                    string period = fc["YMDate"].Replace(".", "");
-                    string _fileName = Path.GetFileName(file.FileName);
+                    string period = aging.YMDate.ToString("yyyyMM");
+                    string _fileName = Path.GetFileName(aging.file.FileName);
                     string _path = Path.Combine(Server.MapPath("~/UploadedFiles"), _fileName);
-                    file.SaveAs(_path);
+                    aging.file.SaveAs(_path);
                     string _fileExt = Path.GetExtension(_path);
                     TRANS_DA TransDA = new TRANS_DA();
                     int uploadRows = 0;
                     DataTable itemResult = new DataTable();
-                    string errMessage = TransDA.uploadAging(period, _fileExt, _path, LoginData.userId, out uploadRows, out itemResult);
+                    string errMessage = TransDA.uploadAging(period, _fileExt, _path, LoginData.userId, true, out uploadRows, out itemResult);
                     if (errMessage.Length > 0)
                     {
+                        TempData["_aging"] = aging;
                         TempData["ItemResult"] = itemResult;
                         throw new Exception(errMessage);
                     }
 
+                    TempData["_aging"] = aging;
+                    TempData["suc"] = $"Aging Uploaded Successfully, {uploadRows} processed";
+                }
+
+                return RedirectToAction("Index", "Aging", new { actions = "UploadFile" });
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message != "CONFIRM")
+                    TempData["ErrMessage"] = $"File upload failed!! {ex.Message}";
+                else
+                    TempData["ErrMessage"] = ex.Message;
+
+                TempData["show"] = 1;
+
+                if (ex.Message.Substring(0, 5) == "Found")
+                    TempData["showButton"] = 1;
+
+                return RedirectToAction("Index", "Aging", new { actions = "UploadFile" });
+            }
+        }
+
+        [HttpPost]
+        [ButtonNameAction]
+        public ActionResult ProceedFile()
+        {
+            try
+            {
+                AgingData aging = (AgingData)TempData.Peek("_aging");
+
+                if (aging.file.ContentLength > 0)
+                {
+                    string period = aging.YMDate.ToString("yyyyMM");
+                    string _fileName = Path.GetFileName(aging.file.FileName);
+                    string _path = Path.Combine(Server.MapPath("~/UploadedFiles"), _fileName);
+                    aging.file.SaveAs(_path);
+                    string _fileExt = Path.GetExtension(_path);
+                    TRANS_DA TransDA = new TRANS_DA();
+                    int uploadRows = 0;
+                    DataTable itemResult = new DataTable();
+                    string errMessage = TransDA.uploadAging(period, _fileExt, _path, LoginData.userId, false, out uploadRows, out itemResult);
+                    if (errMessage.Length > 0)
+                    {
+                        TempData["_aging"] = aging;
+                        TempData["ItemResult"] = itemResult;
+                        throw new Exception(errMessage);
+                    }
+
+                    TempData["_aging"] = aging;
                     TempData["suc"] = $"Aging Uploaded Successfully, {uploadRows} processed";
                 }
 
@@ -229,6 +280,14 @@ namespace BRS.Controllers
             }
 
             return RedirectToAction("Index", "Aging", new { actions = "Export" });
+        }
+
+        [HttpPost]
+        [ButtonNameAction]
+        public ActionResult ClearMessage()
+        {
+            TempData["show"] = 1;
+            return RedirectToAction("Index", "Aging", new { actions = "ClearMessage" });
         }
 
         public ActionResult Download()

@@ -151,7 +151,38 @@ namespace BRS.ViewModels
             return ds;
         }
 
-        public virtual string uploadAging(string period, string _fileExt, string _path, string auditUserName, out int uploadRows, out DataTable itemResult)
+        public int isAgingExists(string period, DataTable locations)
+        {
+            int result = 0;
+            string errMessage = string.Empty;
+
+            using (SqlCommand command = new SqlCommand("dbo.IsAgingExists", CnLocal))
+            {
+                try
+                {
+                    SqlParameter sqlparam = command.Parameters.Add("ReturnValue", SqlDbType.Int);
+                    sqlparam.Direction = ParameterDirection.ReturnValue;
+                    command.Parameters.AddWithValue("Period", period);
+                    command.Parameters.AddWithValue("Locations", locations).SqlDbType = SqlDbType.Structured;
+                    command.CommandType = CommandType.StoredProcedure;
+                    CnLocal.Open();
+                    command.ExecuteNonQuery();
+                    result = (int)command.Parameters["ReturnValue"].Value;
+                }
+                catch (Exception ex)
+                {
+                    errMessage = ex.Message;
+                }
+                finally
+                {
+                    CnLocal.Close();
+                }
+            }
+
+            return result;
+        }
+
+        public virtual string uploadAging(string period, string _fileExt, string _path, string auditUserName, bool ceklocations, out int uploadRows, out DataTable itemResult)
         {
             string errMessage = string.Empty;
             string connStr = string.Empty;
@@ -193,6 +224,19 @@ namespace BRS.ViewModels
                     string s_excel_sql;
                     OleDbCommand command;
                     OleDbDataAdapter da;
+
+                    if (ceklocations)
+                    {
+                        //cek locations is exists
+                        DataTable dt = new DataTable();
+                        s_excel_sql = $"SELECT DISTINCT LOCATION FROM [{System.IO.Path.GetFileNameWithoutExtension(s_table)}] WHERE ISNULL(RELEASE_DATE) = 0 and QUANTITY > 0";
+                        command = new OleDbCommand(s_excel_sql, conn);
+                        da = new OleDbDataAdapter(command);
+                        da.Fill(dt);
+                        int result = isAgingExists(period, dt);
+                        if (result == 1)
+                            throw new Exception("CONFIRM");
+                    }
 
                     //cek release date is null
                     s_excel_sql = $"SELECT * FROM [{System.IO.Path.GetFileNameWithoutExtension(s_table)}] WHERE ISNULL(RELEASE_DATE) < 0";
