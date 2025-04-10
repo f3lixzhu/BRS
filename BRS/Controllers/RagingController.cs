@@ -21,7 +21,7 @@ namespace BRS.Controllers
             }
             else
             {
-                AgingData agingData = new AgingData()
+                RagingData ragingData = new RagingData()
                 {
                     YMDate = DateTime.Now
                 };
@@ -30,21 +30,37 @@ namespace BRS.Controllers
                 ViewBag.LocationsSelectList = new SelectList(TransDA.GetLocationsList(), "Key", "Value");
                 ViewBag.DimensionParamSelectList = new SelectList(AgingParam.DimensionParamDictionary, "Key", "Value");
                 ViewBag.DataParamSelectList = new SelectList(AgingParam.DataParamDictionary, "Key", "Value");
-                return View(agingData);
+                ViewBag.DimensionFilterSelectList = new SelectList(AgingParam.DimensionFilterDictionary, "Key", "Value");
+                return View(ragingData);
             }
         }
 
-        public void GetAgingReport(string period, string locparam, string searchfield, string searchvalue)
+        [HttpPost]
+        public JsonResult AjaxMethod(string value, string period, string locations)
+        {
+            RagingData model = new RagingData();
+            TRANS_DA TransDA = new TRANS_DA();
+            string condition = $" where period='{period.Replace(".","")}'";
+            if (locations != "ALL")
+                condition = condition + $" and locations = '{locations}'";
+
+            model.filterField = string.Empty;
+            model.filterValue = string.Empty;
+            model.filterValueList = TransDA.GetPopulateFilterList(value, condition);
+            return Json(model);
+        }
+
+        public void GetAgingReport(string period, string locparam, string filterfield, string filtervalue)
         {
             ReportParams objReportParams = new ReportParams();
             TRANS_DA TransDA = new TRANS_DA();
 
             string condition = string.Empty;
             string filter = "-";
-            if (searchfield.Length > 0 && searchvalue.Length > 0)
+            if (filterfield.Length > 0 && filtervalue.Length > 0)
             {
-                condition = condition + $"and {searchfield} like '%{searchvalue.ToUpper()}%'";
-                filter = $"{searchfield} is {searchvalue.ToUpper()}";
+                condition = condition + $"and {filterfield} = '{filtervalue}'";
+                filter = $"{filterfield} is {filtervalue}";
             }
 
             var data = TransDA.GetAgingReportData(period.Replace(".",""), locparam, LoginData.brandName, condition);

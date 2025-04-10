@@ -10,12 +10,13 @@ var ReportManager = {
         var locparam = document.getElementById("locparam").value;
         var dparam = document.getElementById("dimsparam").value;
         var dtparam = document.getElementById("dataparam").value;
-        var searchfield = document.getElementById("searchField").value;
-        var searchvalue = document.getElementById("searchValue").value;
+        var filterfield = document.getElementById("filterField").value;
+        var filtervalue = document.getElementById("filterValue").value;
+
         if (locparam == '' || dparam == '' || dtparam == '')
             swal.fire('Error', 'Please select locations / dimension / data first!', 'error');
         else {
-            var jsonParam = "'period':'" + period + "','locparam':'" + locparam + "','searchfield':'" + searchfield + "','searchvalue':'" + searchvalue + "'";
+            var jsonParam = "'period':'" + period + "','locparam':'" + locparam + "','filterfield':'" + filterfield + "','filtervalue':'" + filtervalue + "'";
             var serviceUrl = "../Raging/GetAgingReport";
             
             ReportManager.GetReport(serviceUrl, jsonParam, dparam, dtparam, onFailed);

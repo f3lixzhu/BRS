@@ -193,6 +193,7 @@
     <Compile Include="Models\MenuResult.cs" />
     <Compile Include="Models\Pager.cs" />
     <Compile Include="Models\PasswordData.cs" />
+    <Compile Include="Models\RagingData.cs" />
     <Compile Include="Models\ReportParams.cs" />
     <Compile Include="Models\UserLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

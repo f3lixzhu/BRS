@@ -26,5 +26,16 @@ namespace BRS.Dictionary
             { "TagAmount", "Tag Amount" },
             { "RetailAmount", "Retail Amount" }
         };
+
+        public static Dictionary<string, string> DimensionFilterDictionary = new Dictionary<string, string>
+        {
+            { "Category", "Category" },
+            { "Fit", "Fit" },
+            { "SeasonYear", "Season Year" },
+            { "Gender", "Gender" },
+            { "ItemType", "Item Type" },
+            { "Color", "Color" },
+            { "Size", "Size" }
+        };
     }
 }

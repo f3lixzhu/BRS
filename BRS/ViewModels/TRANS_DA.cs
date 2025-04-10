@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Data.OleDb;
 using BRS.Models;
+using System.Web.Mvc;
 
 namespace BRS.ViewModels
 {
@@ -395,6 +396,37 @@ namespace BRS.ViewModels
             }
 
             return errMessage;
+        }
+
+        public List<SelectListItem> GetPopulateFilterList(string dimension, string condition)
+        {
+            List<SelectListItem> items = new List<SelectListItem>();
+
+            try
+            {
+                using (SqlCommand command = new SqlCommand("dbo.GetPopulateFilterList", CnLocal))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("dimension", dimension);
+                    command.Parameters.AddWithValue("condition", condition);
+                    command.CommandTimeout = 900;
+                    CnLocal.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        items.Add(new SelectListItem {
+                            Text = reader[0].ToString(),
+                            Value = reader[0].ToString()
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return items;
         }
     }
 }

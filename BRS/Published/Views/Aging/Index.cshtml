@@ -121,7 +121,7 @@
                                                 </div>
                                             </div>
                                             <div class="row mt-4">
-                                                @Html.TextBox("file", "", new { type = "file" })
+                                                @Html.TextBoxFor(m => m.file, "", new { type = "file" })
                                             </div>
                                             <div class="row mt-4">
                                                 <input type="submit" value="Upload" name="UploadFile" class="btn btn-warning" />&nbsp;&nbsp;&nbsp;
@@ -131,16 +131,40 @@
                                         <div class="col-md-5">
                                             @if (TempData["ErrMessage"] != null)
                                             {
-                                                <div class="row">
-                                                    <div class="alert alert-danger">
-                                                        <Strong>Error !</Strong> @TempData["ErrMessage"]
-                                                    </div>
-                                                </div>
-                                                if (TempData["showButton"] != null)
+                                                if (TempData["ErrMessage"].Equals("CONFIRM"))
                                                 {
                                                     <div class="row">
-                                                        <input type="submit" value="Export Items" name="ExportItems" class="btn btn-danger" />
+                                                        <div class="alert alert-info">
+                                                            There is already data in this period, do you want to continue with the process?
+                                                        </div>
                                                     </div>
+                                                    <div class="row">
+                                                        <div class="alert alert-default-info">
+                                                            @ViewBag.FileName
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col col-sm-3">
+                                                            <input type="submit" value="Proceed" name="ProceedFile" class="btn btn-warning" />
+                                                        </div>
+                                                        <div class="col col-sm-3 ml-2">
+                                                            <input type="submit" value="Clear" name="ClearMessage" class="btn btn-primary" />
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="row">
+                                                        <div class="alert alert-danger">
+                                                            <Strong>Error !</Strong> @TempData["ErrMessage"]
+                                                        </div>
+                                                    </div>
+                                                    if (TempData["showButton"] != null)
+                                                    {
+                                                        <div class="row">
+                                                            <input type="submit" value="Export Items" name="ExportItems" class="btn btn-danger" />
+                                                        </div>
+                                                    }
                                                 }
                                             }
                                         </div>

@@ -33,6 +33,15 @@ function OpenModalPopUp() {
     $("#myBox2").modal();
 }
 
+function PopulateDropDown(dropDownId, list) {
+    if (list != null && list.length > 0) {
+        $(dropDownId).empty();
+        $.each(list, function () {
+            $(dropDownId).append($("<option></option>").val(this['Value']).html(this['Text']));
+        });
+    }
+}
+
 $(document).ready(function () {
     $('.datepickerYM')
         .wrap('<div class="input-group">')
@@ -94,6 +103,50 @@ $(document).ready(function () {
     });
 
     $(document).on("click", ".usrDetails", OpenModalPopUp);
+
+    $("#filterField").change(function () {
+        var period = document.getElementById("YMDate").value;
+        var locations = document.getElementById("locparam").value;
+        if (locations == '') {
+            swal.fire('Error', 'Please select locations first!', 'error');
+            this.value = "";
+        }
+        else {
+            var value = "";
+            if ($(this).val() != "") {
+                value = $(this).val();
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/Raging/AjaxMethod",
+                data: "{value: '" + value + "', period: '" + period + "', locations: '" + locations + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var list = response.filterValueList;
+                    if (list.length > 0)
+                        PopulateDropDown("#filterValue", list);
+                    else
+                    {
+                        if ($("#filterField").val() != "") {
+                            swal.fire('Error', 'No data found in this period!', 'error');
+                            $("#filterField").val("");
+                        }
+
+                        $("#filterValue").empty();
+                        $("#filterValue").append($("<option></option>").val("").html("Select Field"));
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+    });
 });
 
 jQuery(function ($) {

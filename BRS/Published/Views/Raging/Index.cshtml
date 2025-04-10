@@ -1,4 +1,4 @@
-﻿@model BRS.Models.AgingData
+﻿@model BRS.Models.RagingData
 @{
     ViewBag.Title = "Index";
 }
@@ -58,10 +58,10 @@
                         Filter :
                     </div>
                     <div class="col-sm-2">
-                        @Html.DropDownListFor(m => m.searchField, ViewBag.DimensionParamSelectList as SelectList, "Select Field", new { @class = "form-control" })
+                        @Html.DropDownListFor(m => m.filterField, ViewBag.DimensionFilterSelectList as SelectList, "Select Field", new { @class = "form-control" })
                     </div>
                     <div class="col-sm-2">
-                        @Html.EditorFor(m => m.searchValue, new { HtmlAttributes = new { @class = "form-control", placeholder = "enter search value" } })
+                        @Html.DropDownListFor(m => m.filterValue, Model.filterValueList, "Select Field", new { @class = "form-control" })
                     </div>
                 </div>
                 <div class="row mt-5">
