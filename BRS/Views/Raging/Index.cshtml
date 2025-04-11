@@ -34,7 +34,13 @@
                         Locations :
                     </div>
                     <div class="col-md-4">
-                        @Html.DropDownList("locparam", ViewBag.LocationsSelectList as SelectList, "Select Field", new { @class = "form-control" })
+                        <div class="row">
+                            <input type="button" value="Add" class="btn btn-primary" data-toggle="modal" data-target="#myBox" />&nbsp;&nbsp;
+                            <input type="button" value="Clear" class="btn btn-danger btnDeleteLocations" />
+                        </div>
+                        <div class="row mt-2">
+                            @Html.ListBoxFor(m => m.locationsModel.locations, Model.locationsModel.locationsList, new { @class = "form-control", @id = "locations" })
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-4">
@@ -67,6 +73,47 @@
                 <div class="row mt-5">
                     <div class="col-md-4">
                         <input type="submit" id="btnGenerate" class="btn btn-primary" value="Load Report" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myBox">
+    <div class="modal-dialog" style="max-width: 40%;" role="document">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title">Locations List</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <table class="table table-responsive-xl table-head-fixed text-nowrap table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Location</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var loc in ViewBag.LocationsSelectList)
+                                            {
+                                                <tr>
+                                                    <td width="15%">
+                                                        <button type="button" id="@loc.Key" class="btn btn-primary form-control btnSelectLocations" data-dismiss="modal">+</button>
+                                                    </td>
+                                                    <td width="85%">@loc.Key</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

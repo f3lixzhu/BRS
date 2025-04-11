@@ -93,13 +93,22 @@ $(document).ready(function () {
         document.getElementById("store").value = id;
     });
 
-    $(document).on("click", ".btnSelectShowroom", function () {
+    $(document).on("click", ".btnSelectLocations", function () {
         var id = $(this).attr("id");
-        $("#showroom").append('<option selected="selected">' + id + '</option>');
+        let i = 0;
+        var locarray = $("#locations").val();
+        locarray.forEach(function (loc) {
+            if (loc == id)
+                i = i + 1;
+        });
+
+        if (i == 0) {
+            $("#locations").append('<option selected="selected">' + id + '</option>');
+        }
     });
 
-    $(document).on("click", ".btnDeleteShowroom", function () {
-        $("#showroom").value = null;
+    $(document).on("click", ".btnDeleteLocations", function () {
+        $("#locations").empty();
     });
 
     $(document).on("click", ".usrDetails", OpenModalPopUp);

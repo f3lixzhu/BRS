@@ -7,16 +7,16 @@
 var ReportManager = {
     GenerateReport: function () {
         var period = document.getElementById("YMDate").value;
-        var locparam = document.getElementById("locparam").value;
+        var locarray = $("#locations").val();
         var dparam = document.getElementById("dimsparam").value;
         var dtparam = document.getElementById("dataparam").value;
         var filterfield = document.getElementById("filterField").value;
         var filtervalue = document.getElementById("filterValue").value;
-
-        if (locparam == '' || dparam == '' || dtparam == '')
+        
+        if (locarray.length == 0 || dparam == '' || dtparam == '')
             swal.fire('Error', 'Please select locations / dimension / data first!', 'error');
         else {
-            var jsonParam = "'period':'" + period + "','locparam':'" + locparam + "','filterfield':'" + filterfield + "','filtervalue':'" + filtervalue + "'";
+            var jsonParam = "'period':'" + period + "','locparam':'" + locarray + "','filterfield':'" + filterfield + "','filtervalue':'" + filtervalue + "'";
             var serviceUrl = "../Raging/GetAgingReport";
             
             ReportManager.GetReport(serviceUrl, jsonParam, dparam, dtparam, onFailed);

@@ -23,11 +23,12 @@ namespace BRS.Controllers
             {
                 RagingData ragingData = new RagingData()
                 {
-                    YMDate = DateTime.Now
+                    YMDate = DateTime.Now,
+                    locationsModel = new LocationsModel()
                 };
 
                 TRANS_DA TransDA = new TRANS_DA();
-                ViewBag.LocationsSelectList = new SelectList(TransDA.GetLocationsList(), "Key", "Value");
+                ViewBag.LocationsSelectList = TransDA.GetLocationsList();
                 ViewBag.DimensionParamSelectList = new SelectList(AgingParam.DimensionParamDictionary, "Key", "Value");
                 ViewBag.DataParamSelectList = new SelectList(AgingParam.DataParamDictionary, "Key", "Value");
                 ViewBag.DimensionFilterSelectList = new SelectList(AgingParam.DimensionFilterDictionary, "Key", "Value");
@@ -55,6 +56,23 @@ namespace BRS.Controllers
             ReportParams objReportParams = new ReportParams();
             TRANS_DA TransDA = new TRANS_DA();
 
+            string[] locarray = locparam.Split(',');
+            string _locparam = string.Empty;
+            bool _all = false;
+            foreach (string loc in locarray)
+            {
+                if (loc == "ALL")
+                    _all = true;
+
+                if (_locparam.Length == 0)
+                    _locparam = $"'{loc}'";
+                else
+                    _locparam = _locparam + $", '{loc}'";
+            }
+
+            if (_all)
+                _locparam = "ALL";
+
             string condition = string.Empty;
             string filter = "-";
             if (filterfield.Length > 0 && filtervalue.Length > 0)
@@ -63,12 +81,12 @@ namespace BRS.Controllers
                 filter = $"{filterfield} is {filtervalue}";
             }
 
-            var data = TransDA.GetAgingReportData(period.Replace(".",""), locparam, LoginData.brandName, condition);
+            var data = TransDA.GetAgingReportData(period.Replace(".",""), _locparam, LoginData.brandName, condition);
             objReportParams.DataSource = data.Tables[0];
             objReportParams.ReportTitle = "Aging Report";
             objReportParams.RptFileName = "rptAgingReport.rdlc";
             objReportParams.DataSetName = "dsAgingReport";
-            objReportParams.prmLocation = locparam;
+            objReportParams.prmLocation = _locparam.Replace("'","");
             string _period = $"{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Convert.ToInt16(period.Split('.')[1]))} {period.Split('.')[0]}";
             objReportParams.period = _period;
             objReportParams.filter = filter;
