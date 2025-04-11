@@ -55,7 +55,8 @@ namespace BRS.Controllers
                 if (TempData.Peek("_item") is null)
                 {
                     string where = $"where BRAND = '{LoginData.brandName}'";
-                    DataSet ds = TransDA.GetMsItem(page, where, "Barcode ASC");
+                    sortBy = "Barcode ASC";
+                    DataSet ds = TransDA.GetMsItem(page, where, sortBy);
                     itemData = new ItemData()
                     {
                         dtItemList = ds.Tables[0],
@@ -116,22 +117,22 @@ namespace BRS.Controllers
                     sort = "Barcode DESC";
                     break;
                 case "GENDER DESC":
-                    sort = "Gender DESC";
+                    sort = "Gender DESC, Barcode ASC";
                     break;
                 case "GENDER":
-                    sort = "Gender ASC";
+                    sort = "Gender ASC, Barcode ASC";
                     break;
                 case "ITEMTYPE DESC":
-                    sort = "ItemType DESC";
+                    sort = "ItemType DESC, Barcode ASC";
                     break;
                 case "ITEMTYPE":
-                    sort = "ItemType ASC";
+                    sort = "ItemType ASC, Barcode ASC";
                     break;
                 case "CATEGORY DESC":
-                    sort = "Category DESC";
+                    sort = "Category DESC, Barcode ASC";
                     break;
                 case "CATEGORY":
-                    sort = "Category ASC";
+                    sort = "Category ASC, Barcode ASC";
                     break;
                 case "DESCRIPTION DESC":
                     sort = "Description DESC";
@@ -140,28 +141,28 @@ namespace BRS.Controllers
                     sort = "Description ASC";
                     break;
                 case "COLOR DESC":
-                    sort = "Color DESC";
+                    sort = "Color DESC, Barcode ASC";
                     break;
                 case "COLOR":
-                    sort = "Color ASC";
+                    sort = "Color ASC, Barcode ASC";
                     break;
                 case "SIZE DESC":
-                    sort = "Size DESC";
+                    sort = "Size DESC, Barcode ASC";
                     break;
                 case "SIZE":
-                    sort = "Size ASC";
+                    sort = "Size ASC, Barcode ASC";
                     break;
                 case "FIT DESC":
-                    sort = "Fit DESC";
+                    sort = "Fit DESC, Barcode ASC";
                     break;
                 case "FIT":
-                    sort = "Fit ASC";
+                    sort = "Fit ASC, Barcode ASC";
                     break;
                 case "SEASONYEAR DESC":
-                    sort = "SeasonYear DESC";
+                    sort = "SeasonYear DESC, Barcode ASC";
                     break;
                 case "SEASONYEAR":
-                    sort = "SeasonYear ASC";
+                    sort = "SeasonYear ASC, Barcode ASC";
                     break;
                 case "TAGPRICE DESC":
                     sort = "TagPrice DESC";

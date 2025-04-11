@@ -93,27 +93,27 @@
                             @if (Model.pager.CurrentPage > 1)
                             {
                                 <li>
-                                    <a href="~/Article/Index">First</a>
+                                    <a href="~/Items/Index">First</a>
                                 </li>
                                 <li>
-                                    <a href="~/Article/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@(Model.pager.CurrentPage - 1)">Previous</a>
+                                    <a href="~/Items/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@(Model.pager.CurrentPage - 1)">Previous</a>
                                 </li>
                             }
                             <!--Paging from StartPage to the end Page-->
                             @for (var page = Model.pager.StartPage; page <= Model.pager.EndPage; page++)
                             {
                                 <li class="@(page == Model.pager.CurrentPage ? "active" : "")">
-                                    <a href="~/Article/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@page">@page</a>
+                                    <a href="~/Items/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@page">@page</a>
                                 </li>
                             }
                             <!--If Current Page is not the Last Page then show Next and Last Button/link on Paging-->
                             @if (Model.pager.CurrentPage < Model.pager.TotalPages)
                             {
                                 <li>
-                                    <a href="~/Article/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@(Model.pager.CurrentPage + 1)">Next</a>
+                                    <a href="~/Items/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@(Model.pager.CurrentPage + 1)">Next</a>
                                 </li>
                                 <li>
-                                    <a href="~/Article/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@Model.pager.TotalPages">Last</a>
+                                    <a href="~/Items/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@Model.pager.TotalPages">Last</a>
                                 </li>
                             }
                         </ul>

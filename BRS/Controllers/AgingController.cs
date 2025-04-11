@@ -49,7 +49,8 @@ namespace BRS.Controllers
                 if (TempData.Peek("_aging") is null)
                 {
                     string where = "";
-                    DataSet ds = TransDA.GetAging(page, where, "Period DESC");
+                    sortBy = "Period DESC, Barcode ASC";
+                    DataSet ds = TransDA.GetAging(page, where, sortBy);
                     agingData = new AgingData()
                     {
                         dtAgingList = ds.Tables[0],
@@ -110,19 +111,19 @@ namespace BRS.Controllers
             switch (sortBy)
             {
                 case "PERIOD ASC":
-                    sort = "Period ASC";
+                    sort = "Period ASC, Barcode ASC";
                     break;
                 case "RELEASEDATE DESC":
-                    sort = "ReleaseDate DESC";
+                    sort = "ReleaseDate DESC, Barcode ASC";
                     break;
                 case "RELEASEDATE":
-                    sort = "ReleaseDate ASC";
+                    sort = "ReleaseDate ASC, Barcode ASC";
                     break;
                 case "LOCATION DESC":
-                    sort = "Locations DESC";
+                    sort = "Locations DESC, Barcode ASC";
                     break;
                 case "LOCATION":
-                    sort = "Locations ASC";
+                    sort = "Locations ASC, Barcode ASC";
                     break;
                 case "BARCODE DESC":
                     sort = "Barcode DESC";
@@ -137,7 +138,7 @@ namespace BRS.Controllers
                     sort = "Quantity ASC";
                     break;
                 default:
-                    sort = "Period DESC";
+                    sort = "Period DESC, Barcode ASC";
                     break;
             }
 

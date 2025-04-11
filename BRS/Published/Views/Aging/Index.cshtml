@@ -48,7 +48,7 @@
                             @foreach (System.Data.DataRow item in Model.dtAgingList.Rows)
                             {
                                 <tr>
-                                    <td>@item["Period"]</td>
+                                    <td>@String.Concat(item["Period"].ToString().Substring(0, 4),".",item["Period"].ToString().Substring(4,2))</td>
                                     <td>@String.Format("{0:dd-MM-yyyy}", item["ReleaseDate"])</td>
                                     <td>@item["Locations"]</td>
                                     <td>@item["Barcode"]</td>
@@ -65,27 +65,27 @@
                             @if (Model.pager.CurrentPage > 1)
                             {
                                 <li>
-                                    <a href="~/Article/Index">First</a>
+                                    <a href="~/Aging/Index">First</a>
                                 </li>
                                 <li>
-                                    <a href="~/Article/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@(Model.pager.CurrentPage - 1)">Previous</a>
+                                    <a href="~/Aging/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@(Model.pager.CurrentPage - 1)">Previous</a>
                                 </li>
                             }
                             <!--Paging from StartPage to the end Page-->
                             @for (var page = Model.pager.StartPage; page <= Model.pager.EndPage; page++)
                             {
                                 <li class="@(page == Model.pager.CurrentPage ? "active" : "")">
-                                    <a href="~/Article/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@page">@page</a>
+                                    <a href="~/Aging/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@page">@page</a>
                                 </li>
                             }
                             <!--If Current Page is not the Last Page then show Next and Last Button/link on Paging-->
                             @if (Model.pager.CurrentPage < Model.pager.TotalPages)
                             {
                                 <li>
-                                    <a href="~/Article/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@(Model.pager.CurrentPage + 1)">Next</a>
+                                    <a href="~/Aging/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@(Model.pager.CurrentPage + 1)">Next</a>
                                 </li>
                                 <li>
-                                    <a href="~/Article/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@Model.pager.TotalPages">Last</a>
+                                    <a href="~/Aging/Index?searchField=@ViewBag.searchField&searchValue=@ViewBag.searchValue&page=@Model.pager.TotalPages">Last</a>
                                 </li>
                             }
                         </ul>
@@ -148,7 +148,7 @@
                                                             <input type="submit" value="Proceed" name="ProceedFile" class="btn btn-warning" />
                                                         </div>
                                                         <div class="col col-sm-3 ml-2">
-                                                            <input type="submit" value="Clear" name="ClearMessage" class="btn btn-primary" />
+                                                            <input type="submit" value="No" name="ClearMessage" class="btn btn-primary" />
                                                         </div>
                                                     </div>
                                                 }
