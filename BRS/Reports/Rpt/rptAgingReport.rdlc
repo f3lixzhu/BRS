@@ -61,12 +61,16 @@
           <DataField>BoardWH</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="TagAmount">
-          <DataField>TagAmount</DataField>
+        <Field Name="TagPrice">
+          <DataField>TagPrice</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="RetailAmount">
-          <DataField>RetailAmount</DataField>
+        <Field Name="RetailPrice">
+          <DataField>RetailPrice</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CostPrice">
+          <DataField>CostPrice</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="ReleaseDate">
@@ -272,6 +276,7 @@
                                   <Value>=SUM(Fields(Parameters!prmDataField.Value).Value)</Value>
                                   <Style>
                                     <FontWeight>Bold</FontWeight>
+                                    <Format>#,0;(#,0)</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>

@@ -301,9 +301,11 @@ namespace BRS.Reports.ReportDataSet {
             
             private global::System.Data.DataColumn columnBoardWH;
             
-            private global::System.Data.DataColumn columnTagAmount;
+            private global::System.Data.DataColumn columnTagPrice;
             
-            private global::System.Data.DataColumn columnRetailAmount;
+            private global::System.Data.DataColumn columnRetailPrice;
+            
+            private global::System.Data.DataColumn columnCostPrice;
             
             private global::System.Data.DataColumn columnReleaseDate;
             
@@ -436,17 +438,25 @@ namespace BRS.Reports.ReportDataSet {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn TagAmountColumn {
+            public global::System.Data.DataColumn TagPriceColumn {
                 get {
-                    return this.columnTagAmount;
+                    return this.columnTagPrice;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn RetailAmountColumn {
+            public global::System.Data.DataColumn RetailPriceColumn {
                 get {
-                    return this.columnRetailAmount;
+                    return this.columnRetailPrice;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public global::System.Data.DataColumn CostPriceColumn {
+                get {
+                    return this.columnCostPrice;
                 }
             }
             
@@ -531,8 +541,9 @@ namespace BRS.Reports.ReportDataSet {
                         string Fit, 
                         string SeasonYear, 
                         string BoardWH, 
-                        string TagAmount, 
-                        string RetailAmount, 
+                        string TagPrice, 
+                        string RetailPrice, 
+                        string CostPrice, 
                         string ReleaseDate, 
                         string Locations, 
                         string Quantity, 
@@ -550,8 +561,9 @@ namespace BRS.Reports.ReportDataSet {
                         Fit,
                         SeasonYear,
                         BoardWH,
-                        TagAmount,
-                        RetailAmount,
+                        TagPrice,
+                        RetailPrice,
+                        CostPrice,
                         ReleaseDate,
                         Locations,
                         Quantity,
@@ -589,8 +601,9 @@ namespace BRS.Reports.ReportDataSet {
                 this.columnFit = base.Columns["Fit"];
                 this.columnSeasonYear = base.Columns["SeasonYear"];
                 this.columnBoardWH = base.Columns["BoardWH"];
-                this.columnTagAmount = base.Columns["TagAmount"];
-                this.columnRetailAmount = base.Columns["RetailAmount"];
+                this.columnTagPrice = base.Columns["TagPrice"];
+                this.columnRetailPrice = base.Columns["RetailPrice"];
+                this.columnCostPrice = base.Columns["CostPrice"];
                 this.columnReleaseDate = base.Columns["ReleaseDate"];
                 this.columnLocations = base.Columns["Locations"];
                 this.columnQuantity = base.Columns["Quantity"];
@@ -622,10 +635,12 @@ namespace BRS.Reports.ReportDataSet {
                 base.Columns.Add(this.columnSeasonYear);
                 this.columnBoardWH = new global::System.Data.DataColumn("BoardWH", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnBoardWH);
-                this.columnTagAmount = new global::System.Data.DataColumn("TagAmount", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnTagAmount);
-                this.columnRetailAmount = new global::System.Data.DataColumn("RetailAmount", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnRetailAmount);
+                this.columnTagPrice = new global::System.Data.DataColumn("TagPrice", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTagPrice);
+                this.columnRetailPrice = new global::System.Data.DataColumn("RetailPrice", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnRetailPrice);
+                this.columnCostPrice = new global::System.Data.DataColumn("CostPrice", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnCostPrice);
                 this.columnReleaseDate = new global::System.Data.DataColumn("ReleaseDate", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnReleaseDate);
                 this.columnLocations = new global::System.Data.DataColumn("Locations", typeof(string), null, global::System.Data.MappingType.Element);
@@ -954,33 +969,49 @@ namespace BRS.Reports.ReportDataSet {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public string TagAmount {
+            public string TagPrice {
                 get {
                     try {
-                        return ((string)(this[this.tabledsAgingReport.TagAmountColumn]));
+                        return ((string)(this[this.tabledsAgingReport.TagPriceColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'TagAmount\' in table \'dsAgingReport\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'TagPrice\' in table \'dsAgingReport\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tabledsAgingReport.TagAmountColumn] = value;
+                    this[this.tabledsAgingReport.TagPriceColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public string RetailAmount {
+            public string RetailPrice {
                 get {
                     try {
-                        return ((string)(this[this.tabledsAgingReport.RetailAmountColumn]));
+                        return ((string)(this[this.tabledsAgingReport.RetailPriceColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'RetailAmount\' in table \'dsAgingReport\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'RetailPrice\' in table \'dsAgingReport\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tabledsAgingReport.RetailAmountColumn] = value;
+                    this[this.tabledsAgingReport.RetailPriceColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public string CostPrice {
+                get {
+                    try {
+                        return ((string)(this[this.tabledsAgingReport.CostPriceColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'CostPrice\' in table \'dsAgingReport\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledsAgingReport.CostPriceColumn] = value;
                 }
             }
             
@@ -1182,26 +1213,38 @@ namespace BRS.Reports.ReportDataSet {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public bool IsTagAmountNull() {
-                return this.IsNull(this.tabledsAgingReport.TagAmountColumn);
+            public bool IsTagPriceNull() {
+                return this.IsNull(this.tabledsAgingReport.TagPriceColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public void SetTagAmountNull() {
-                this[this.tabledsAgingReport.TagAmountColumn] = global::System.Convert.DBNull;
+            public void SetTagPriceNull() {
+                this[this.tabledsAgingReport.TagPriceColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public bool IsRetailAmountNull() {
-                return this.IsNull(this.tabledsAgingReport.RetailAmountColumn);
+            public bool IsRetailPriceNull() {
+                return this.IsNull(this.tabledsAgingReport.RetailPriceColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public void SetRetailAmountNull() {
-                this[this.tabledsAgingReport.RetailAmountColumn] = global::System.Convert.DBNull;
+            public void SetRetailPriceNull() {
+                this[this.tabledsAgingReport.RetailPriceColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public bool IsCostPriceNull() {
+                return this.IsNull(this.tabledsAgingReport.CostPriceColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public void SetCostPriceNull() {
+                this[this.tabledsAgingReport.CostPriceColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

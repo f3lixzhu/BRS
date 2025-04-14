@@ -23,9 +23,9 @@ namespace BRS.Dictionary
         public static Dictionary<string, string> DataParamDictionary = new Dictionary<string, string>
         {
             { "Quantity", "Quantity" },
-            { "TagAmount", "Tag Price" },
-            { "RetailAmount", "Retail Price" },
-            { "CostAmount", "Cost Price" }
+            { "TagPrice", "Tag Price" },
+            { "RetailPrice", "Retail Price" },
+            { "CostPrice", "Cost Price" }
         };
 
         public static Dictionary<string, string> DimensionFilterDictionary = new Dictionary<string, string>
