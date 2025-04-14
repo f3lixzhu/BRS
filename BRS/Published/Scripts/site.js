@@ -115,8 +115,8 @@ $(document).ready(function () {
 
     $("#filterField").change(function () {
         var period = document.getElementById("YMDate").value;
-        var locations = document.getElementById("locparam").value;
-        if (locations == '') {
+        var locarray = $("#locations").val();
+        if (locarray.length == 0) {
             swal.fire('Error', 'Please select locations first!', 'error');
             this.value = "";
         }
@@ -129,7 +129,7 @@ $(document).ready(function () {
             $.ajax({
                 type: "POST",
                 url: "/Raging/AjaxMethod",
-                data: "{value: '" + value + "', period: '" + period + "', locations: '" + locations + "'}",
+                data: "{value: '" + value + "', period: '" + period + "', locations: '" + locarray + "'}",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (response) {

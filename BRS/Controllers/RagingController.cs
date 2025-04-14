@@ -41,9 +41,27 @@ namespace BRS.Controllers
         {
             RagingData model = new RagingData();
             TRANS_DA TransDA = new TRANS_DA();
+
+            string[] locarray = locations.Split(',');
+            string _locparam = string.Empty;
+            bool _all = false;
+            foreach (string loc in locarray)
+            {
+                if (loc == "ALL")
+                    _all = true;
+
+                if (_locparam.Length == 0)
+                    _locparam = $"'{loc}'";
+                else
+                    _locparam = _locparam + $", '{loc}'";
+            }
+
+            if (_all)
+                _locparam = "ALL";
+
             string condition = $" where period='{period.Replace(".","")}'";
-            if (locations != "ALL")
-                condition = condition + $" and locations = '{locations}'";
+            if (_locparam != "ALL")
+                condition = condition + $" and locations IN ({_locparam})";
 
             model.filterField = string.Empty;
             model.filterValue = string.Empty;
