@@ -89,7 +89,7 @@ namespace BRS.ViewModels
                     OleDbCommand command;
                     OleDbDataAdapter da;
 
-                    s_excel_sql = $"SELECT * FROM [{System.IO.Path.GetFileNameWithoutExtension(s_table)}] WHERE ISNULL(TAG_PRICE) < 0";
+                    s_excel_sql = $"SELECT * FROM [{System.IO.Path.GetFileNameWithoutExtension(s_table)}] WHERE LEN(BARCODE) > 0 AND ISNULL(TAG_PRICE) = -1";
                     command = new OleDbCommand(s_excel_sql, conn);
                     da = new OleDbDataAdapter(command);
                     da.Fill(dtExcelData);
