@@ -2415,6 +2415,7 @@
     <EmbeddedResource Include="Reports\Rpt\blank.rdlc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Rpt\rptAgingItemReport.rdlc" />
     <EmbeddedResource Include="Reports\Rpt\rptAgingReport.rdlc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

@@ -42,9 +42,16 @@ namespace BRS.Reports
         private void GenerateReportDocument(dynamic reportparam, DataTable data, string dparam, string dtparam)
         {
             string dsName = reportparam.DataSetName;
+            string rptName = string.Empty;
+
+            if (dparam == "Description")
+                rptName = "rptAgingItemReport.rdlc";
+            else
+                rptName = reportparam.RptFileName;
+
             ReportViewer1.LocalReport.DataSources.Clear();
             ReportViewer1.LocalReport.DataSources.Add(new ReportDataSource(dsName, data));
-            ReportViewer1.LocalReport.ReportPath = Server.MapPath($@"rpt/{reportparam.RptFileName}");
+            ReportViewer1.LocalReport.ReportPath = Server.MapPath($@"rpt/{rptName}");
             ReportViewer1.ZoomMode = ZoomMode.FullPage;
             ReportParameter[] parameters = new ReportParameter[5];
             parameters[0] = new ReportParameter("prmRowField", dparam, true);

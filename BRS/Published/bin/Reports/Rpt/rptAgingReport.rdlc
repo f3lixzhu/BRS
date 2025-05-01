@@ -129,7 +129,6 @@
                         <rd:DefaultName>Textbox6</rd:DefaultName>
                         <Style>
                           <Border>
-                            <Color>LightGrey</Color>
                             <Style>Solid</Style>
                           </Border>
                           <BackgroundColor>LightGrey</BackgroundColor>
@@ -152,10 +151,10 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>0.94792in</Width>
+                  <Width>1.06771in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.94271in</Width>
+                  <Width>1.02604in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -334,7 +333,6 @@
                         <rd:DefaultName>AgingSort</rd:DefaultName>
                         <Style>
                           <Border>
-                            <Color>LightGrey</Color>
                             <Style>Solid</Style>
                           </Border>
                           <BackgroundColor>LightGrey</BackgroundColor>
@@ -374,13 +372,14 @@
                                     </Style>
                                   </TextRun>
                                 </TextRuns>
-                                <Style />
+                                <Style>
+                                  <TextAlign>Center</TextAlign>
+                                </Style>
                               </Paragraph>
                             </Paragraphs>
                             <rd:DefaultName>AgingGroup</rd:DefaultName>
                             <Style>
                               <Border>
-                                <Color>LightGrey</Color>
                                 <Style>Solid</Style>
                               </Border>
                               <BackgroundColor>LightGrey</BackgroundColor>
@@ -420,7 +419,6 @@
                         <rd:DefaultName>Textbox9</rd:DefaultName>
                         <Style>
                           <Border>
-                            <Color>LightGrey</Color>
                             <Style>Solid</Style>
                           </Border>
                           <BackgroundColor>LightGrey</BackgroundColor>
@@ -526,7 +524,7 @@
             </SortExpressions>
             <Left>0.18624in</Left>
             <Height>1in</Height>
-            <Width>5.25in</Width>
+            <Width>5.45312in</Width>
             <Style>
               <Border>
                 <Style>None</Style>
