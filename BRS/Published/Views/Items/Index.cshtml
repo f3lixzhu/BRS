@@ -130,6 +130,33 @@
                             <div class="card-body">
                                 <fieldset>
                                     <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="card">
+                                                <div class="row">
+                                                    <div class="col-sm-4 ml-4 mt-2">
+                                                        @Html.RadioButtonFor(m => m.action, "1", new { HtmlAttributes = new { @class = "form-control" } })
+                                                        <label for="new">&nbsp;&nbsp;New</label>
+                                                    </div>
+                                                    <div class="col-sm-4 mt-2">
+                                                        @Html.RadioButtonFor(m => m.action, "2", new { HtmlAttributes = new { @class = "form-control" } })
+                                                        <label for="update">&nbsp;&nbsp;Update</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2"></div>
+                                        <div class="col-md-5">
+                                            @if (TempData["ErrMessage"] != null)
+                                            {
+                                                <div class="row">
+                                                    <div class="alert alert-danger">
+                                                        <Strong>Error !</Strong> @TempData["ErrMessage"]
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-md-7">
                                             @Html.TextBox("file", "", new { type = "file" })
                                             <div class="row mt-4">
@@ -138,12 +165,12 @@
                                             </div>
                                         </div>
                                         <div class="col-md-5">
-                                            @if (TempData["ErrMessage"] != null)
-                                            {
-                                                <div class="alert alert-danger">
-                                                    <Strong>Error !</Strong> @TempData["ErrMessage"]
-                                                </div>
-                                            }
+                                        @if (TempData["ErrMessage"] != null && TempData["showButton"] != null)
+                                        {
+                                            <div class="row">
+                                                <input type="submit" value="Export Items" name="ExportItems" class="btn btn-primary" />
+                                            </div>
+                                        }
                                         </div>
                                     </div>
                                 </fieldset>

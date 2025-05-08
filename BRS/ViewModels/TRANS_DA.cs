@@ -36,11 +36,48 @@ namespace BRS.ViewModels
             return ds;
         }
 
-        public virtual string uploadMsItem(string _fileExt, string _path, string auditUserName, out int uploadRows)
+        public virtual DataTable GetExistingItem(DataTable dt)
+        {
+            SqlDataAdapter adapter = new SqlDataAdapter();
+            DataSet ds = new DataSet();
+            using (SqlCommand command = new SqlCommand("dbo.GetExistingItems", CnLocal))
+            {
+                command.Parameters.AddWithValue("items", dt).SqlDbType = SqlDbType.Structured;
+                command.CommandType = CommandType.StoredProcedure;
+                CnLocal.Open();
+
+                adapter.SelectCommand = command;
+                adapter.Fill(ds, "ItemsData");
+                CnLocal.Close();
+            }
+
+            return ds.Tables[0];
+        }
+
+        public virtual DataTable GetNonExistingItem(DataTable dt)
+        {
+            SqlDataAdapter adapter = new SqlDataAdapter();
+            DataSet ds = new DataSet();
+            using (SqlCommand command = new SqlCommand("dbo.GetNonExistingItems", CnLocal))
+            {
+                command.Parameters.AddWithValue("items", dt).SqlDbType = SqlDbType.Structured;
+                command.CommandType = CommandType.StoredProcedure;
+                CnLocal.Open();
+
+                adapter.SelectCommand = command;
+                adapter.Fill(ds, "ItemsData");
+                CnLocal.Close();
+            }
+
+            return ds.Tables[0];
+        }
+
+        public virtual string uploadMsItem(int action, string _fileExt, string _path, string auditUserName, out int uploadRows, out DataTable itemResult)
         {
             string errMessage = string.Empty;
             string connStr = string.Empty;
             uploadRows = 0;
+            itemResult = new DataTable();
 
             if (_fileExt == ".xls" || _fileExt == ".xlsx")
             {
@@ -105,14 +142,47 @@ namespace BRS.ViewModels
                     {
                         uploadRows = dtExcelData.Rows.Count;
 
-                        using (SqlCommand sqlcom = new SqlCommand("CreateMsItem", CnLocal))
+                        if (action == 1)
                         {
-                            sqlcom.CommandType = CommandType.StoredProcedure;
-                            sqlcom.Parameters.AddWithValue("items", dtExcelData).SqlDbType = SqlDbType.Structured;
-                            sqlcom.Parameters.AddWithValue("auditUserName", auditUserName);
-                            CnLocal.Open();
-                            sqlcom.ExecuteScalar();
-                            CnLocal.Close();
+                            DataTable dt = GetExistingItem(dtExcelData);
+                            if (dt.Rows.Count == 0)
+                            {
+                                using (SqlCommand sqlcom = new SqlCommand("CreateMsItem", CnLocal))
+                                {
+                                    sqlcom.CommandType = CommandType.StoredProcedure;
+                                    sqlcom.Parameters.AddWithValue("items", dtExcelData).SqlDbType = SqlDbType.Structured;
+                                    sqlcom.Parameters.AddWithValue("auditUserName", auditUserName);
+                                    CnLocal.Open();
+                                    sqlcom.ExecuteScalar();
+                                    CnLocal.Close();
+                                }
+                            }
+                            else
+                            {
+                                itemResult = dt;
+                                throw new Exception($"Found {dt.Rows.Count} of {dtExcelData.Rows.Count} barcode existing in master items");
+                            }
+                        }
+                        else
+                        {
+                            DataTable dt = GetNonExistingItem(dtExcelData);
+                            if (dt.Rows.Count == 0)
+                            {
+                                using (SqlCommand sqlcom = new SqlCommand("EditMsItem", CnLocal))
+                                {
+                                    sqlcom.CommandType = CommandType.StoredProcedure;
+                                    sqlcom.Parameters.AddWithValue("items", dtExcelData).SqlDbType = SqlDbType.Structured;
+                                    sqlcom.Parameters.AddWithValue("auditUserName", auditUserName);
+                                    CnLocal.Open();
+                                    sqlcom.ExecuteScalar();
+                                    CnLocal.Close();
+                                }
+                            }
+                            else
+                            {
+                                itemResult = dt;
+                                throw new Exception($"Found {dt.Rows.Count} of {dtExcelData.Rows.Count} barcode not found in master items");
+                            }
                         }
                     }
                 }

@@ -12,5 +12,6 @@ namespace BRS.Models
         public string searchValue { get; set; }
         public DataTable dtItemList { get; set; }
         public Pager pager { get; set; }
+        public int action { get; set; }
     }
 }

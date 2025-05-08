@@ -10,6 +10,7 @@ using BRS.ViewModels;
 using BRS.Dictionary;
 using System.Reflection;
 using System.IO;
+using ClosedXML.Excel;
 
 namespace BRS.Controllers
 {
@@ -28,7 +29,7 @@ namespace BRS.Controllers
         }
 
         // GET: Items
-        public ActionResult Index(string searchField = "", string searchValue = "", string sortBy = "", int page = 1, string actions = "")
+        public ActionResult Index(string searchField = "", string searchValue = "", string sortBy = "", int page = 1, int _action = 1, string actions = "")
         {
             ViewBag.SortBarcodeParameter = sortBy == "BARCODE" ? "BARCODE DESC" : "BARCODE";
             ViewBag.SortGenderParameter = sortBy == "GENDER" ? "GENDER DESC" : "GENDER";
@@ -60,7 +61,8 @@ namespace BRS.Controllers
                     itemData = new ItemData()
                     {
                         dtItemList = ds.Tables[0],
-                        pager = new Pager((ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0) ? Convert.ToInt32(ds.Tables[1].Rows[0]["TotalRecords"]) : 0, 1, Convert.ToInt32(ConfigurationManager.AppSettings["PageSize"]))
+                        pager = new Pager((ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0) ? Convert.ToInt32(ds.Tables[1].Rows[0]["TotalRecords"]) : 0, 1, Convert.ToInt32(ConfigurationManager.AppSettings["PageSize"])),
+                        action = 1
                     };
 
                     TempData["_item"] = itemData;
@@ -79,7 +81,7 @@ namespace BRS.Controllers
                         TempData["err"] = "Silakan pilih filter terlebih dahulu!";
                     }
 
-                    itemData = bindGrid(page, itemData, searchField, searchValue, sortBy);
+                    itemData = bindGrid(page, itemData, searchField, searchValue, sortBy, _action);
                     if (actions != "UploadFile" && itemData.dtItemList.Rows.Count == 0)
                         TempData["err"] = "Data tidak ditemukan!";
                 }
@@ -91,7 +93,7 @@ namespace BRS.Controllers
             }
         }
 
-        private ItemData bindGrid(int page, ItemData itemData, string searchField, string searchValue, string sortBy)
+        private ItemData bindGrid(int page, ItemData itemData, string searchField, string searchValue, string sortBy, int action)
         {
             string where = $"BRAND = '{LoginData.brandName}' and ";
 
@@ -107,6 +109,7 @@ namespace BRS.Controllers
 
             itemData.searchField = searchField;
             itemData.searchValue = searchValue;
+            
             TRANS_DA TransDA = new TRANS_DA();
             DataSet ds = new DataSet();
 
@@ -192,6 +195,8 @@ namespace BRS.Controllers
             itemData.dtItemList = ds.Tables[0];
             var pager = new Pager((ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0) ? Convert.ToInt32(ds.Tables[1].Rows[0]["TotalRecords"]) : 0, page, Convert.ToInt32(ConfigurationManager.AppSettings["PageSize"]));
             itemData.pager = pager;
+            itemData.action = action;
+
             return itemData;
         }
 
@@ -213,7 +218,7 @@ namespace BRS.Controllers
 
         [HttpPost]
         [ButtonNameAction]
-        public ActionResult UploadFile(HttpPostedFileBase file)
+        public ActionResult UploadFile(ItemData id, HttpPostedFileBase file)
         {
             try
             {
@@ -228,22 +233,30 @@ namespace BRS.Controllers
                     string _fileExt = Path.GetExtension(_path);
                     TRANS_DA TransDA = new TRANS_DA();
                     int uploadRows = 0;
-                    string errMessage = TransDA.uploadMsItem(_fileExt, _path, LoginData.userId, out uploadRows);
+                    DataTable itemResult = new DataTable();
+                    string errMessage = TransDA.uploadMsItem(id.action, _fileExt, _path, LoginData.userId, out uploadRows, out itemResult);
                     if (errMessage.Length > 0)
+                    {
+                        TempData["ItemResult"] = itemResult;
                         throw new Exception(errMessage);
+                    }
 
                     DataSet ds = TransDA.GetMsItem(1, "", "Barcode ASC");
 
                     TempData["suc"] = $"Items Uploaded Successfully, {uploadRows} processed";
                 }
 
-                return RedirectToAction("Index", "Items", new { actions = "UploadFile" });
+                return RedirectToAction("Index", "Items", new { _action = id.action, actions = "UploadFile" });
             }
             catch (Exception ex)
             {
                 TempData["ErrMessage"] = $"File upload failed!! {ex.Message}";
                 TempData["show"] = 1;
-                return RedirectToAction("Index", "Items", new { actions = "UploadFile" });
+
+                if (ex.Message.Substring(0, 5) == "Found")
+                    TempData["showButton"] = 1;
+
+                return RedirectToAction("Index", "Items", new { _action = id.action, actions = "UploadFile" });
             }
         }
 
@@ -284,6 +297,30 @@ namespace BRS.Controllers
             }
 
             return RedirectToAction("Index", "Items", new { actions = "Download" });
+        }
+
+        [HttpPost]
+        [ButtonNameAction]
+        public ActionResult ExportItems()
+        {
+            if (TempData.Peek("ItemResult") != null)
+            {
+                DataTable dt = (DataTable)TempData["ItemResult"];
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                string fileName = "ItemsResult_" + DateTime.Now.ToString("dd-MM-yyyy") + ".xlsx";
+
+                using (XLWorkbook wb = new XLWorkbook())
+                {
+                    wb.Worksheets.Add(dt);
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        wb.SaveAs(stream);
+                        return File(stream.ToArray(), contentType, fileName);
+                    }
+                }
+            }
+
+            return RedirectToAction("Index", "Items", new { actions = "Export" });
         }
     }
 }
