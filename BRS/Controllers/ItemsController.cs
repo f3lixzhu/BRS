@@ -262,17 +262,16 @@ namespace BRS.Controllers
 
         [HttpPost]
         [ButtonNameAction]
-        public ActionResult DeleteItem(ItemData itemData, FormCollection fc)
+        public ActionResult DeleteItem(FormCollection fc)
         {
             try
             {
                 string barcode = fc["Barcode"];
                 TRANS_DA transDA = new TRANS_DA();
-                string errMessage = transDA.deleteItem(barcode);
+                string errMessage = transDA.deleteItem(barcode, LoginData.userId);
                 if (errMessage.Length > 0)
                     throw new Exception(errMessage);
                 
-
                 TempData["Suc"] = "Item deleted successfully";
             }
             catch (Exception ex)

@@ -440,17 +440,17 @@ namespace BRS.ViewModels
             return locationList;
         }
 
-        public string deleteItem(string barcode)
+        public string deleteItem(string barcode, string auditUserName)
         {
             string errMessage = string.Empty;
-            string query = String.Format("DELETE FROM dbo.Items where Barcode = @barcode");
 
             try
             {
-                using (SqlCommand command = new SqlCommand(query, CnLocal))
+                using (SqlCommand command = new SqlCommand("dbo.DeleteMsItem", CnLocal))
                 {
-                    command.CommandType = CommandType.Text;
-                    command.Parameters.Add("barcode", SqlDbType.Char, 15).Value = barcode;
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("Barcode", barcode);
+                    command.Parameters.AddWithValue("AuditUserName", auditUserName);
                     command.CommandTimeout = 900;
                     CnLocal.Open();
                     command.ExecuteScalar();
