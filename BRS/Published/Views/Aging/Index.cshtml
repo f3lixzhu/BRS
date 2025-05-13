@@ -4,6 +4,16 @@
     ViewBag.Title = "Index";
 }
 
+@section scripts{
+    <script type="text/javascript">
+        $("body").on("click", "#btnDelete", function () {
+            $("#hdPeriod").val($(this).data("item").split(";")[0]);
+            $("#hdLocation").val($(this).data("item").split(";")[1]);
+            $("#hdBarcode").val($(this).data("item").split(";")[2]);
+        });
+    </script>
+}
+
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-4 text-right">
@@ -37,6 +47,7 @@
                     <table class="table table-responsive text-nowrap table-striped">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>@Html.ActionLink("PERIOD", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortPeriodParameter })</th>
                                 <th>@Html.ActionLink("RELEASE DATE", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortReleaseDateParameter })</th>
                                 <th>@Html.ActionLink("LOCATION", "Index", new { searchField = Request["searchField"], searchValue = Request["searchValue"], sortBy = ViewBag.SortLocationParameter })</th>
@@ -45,10 +56,16 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @Html.Hidden("Period", null, new { @id = "hdPeriod" })
+                            @Html.Hidden("Location", null, new { @id = "hdLocation" })
+                            @Html.Hidden("Barcode", null, new { @id = "hdBarcode" })
                             @foreach (System.Data.DataRow item in Model.dtAgingList.Rows)
                             {
                                 <tr>
-                                    <td>@String.Concat(item["Period"].ToString().Substring(0, 4),".",item["Period"].ToString().Substring(4,2))</td>
+                                    <td>
+                                        <input type="submit" id="btnDelete" data-item="@String.Concat(item["Period"], ";", item["Locations"], ";", item["Barcode"])" value="Delete" class="btn btn-danger" onclick="sendForm(this,event,'DeleteAging');" />
+                                    </td>
+                                    <td>@String.Concat(item["Period"].ToString().Substring(0, 4), ".", item["Period"].ToString().Substring(4, 2))</td>
                                     <td>@String.Format("{0:dd-MM-yyyy}", item["ReleaseDate"])</td>
                                     <td>@item["Locations"]</td>
                                     <td>@item["Barcode"]</td>
@@ -102,6 +119,33 @@
                             <div class="card-body">
                                 <fieldset>
                                     <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="card">
+                                                <div class="row">
+                                                    <div class="col-sm-4 ml-4 mt-2">
+                                                        @Html.RadioButtonFor(m => m.action, "1", new { HtmlAttributes = new { @class = "form-control" } })
+                                                        <label for="new">&nbsp;&nbsp;New</label>
+                                                    </div>
+                                                    <div class="col-sm-4 mt-2">
+                                                        @Html.RadioButtonFor(m => m.action, "2", new { HtmlAttributes = new { @class = "form-control" } })
+                                                        <label for="update">&nbsp;&nbsp;Update</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2"></div>
+                                        <div class="col-md-5">
+                                            @if (TempData["ErrMessage"] != null)
+                                            {
+                                                <div class="row">
+                                                    <div class="alert alert-danger">
+                                                        <Strong>Error !</Strong> @TempData["ErrMessage"]
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-md-7">
                                             <div class="row">
                                                 <div class="col-sm-2">
@@ -129,43 +173,11 @@
                                             </div>
                                         </div>
                                         <div class="col-md-5">
-                                            @if (TempData["ErrMessage"] != null)
+                                            @if (TempData["ErrMessage"] != null && TempData["showButton"] != null)
                                             {
-                                                if (TempData["ErrMessage"].Equals("CONFIRM"))
-                                                {
-                                                    <div class="row">
-                                                        <div class="alert alert-info">
-                                                            There is already data in this period, do you want to continue with the process?
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="alert alert-default-info">
-                                                            @ViewBag.FileName
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col col-sm-3">
-                                                            <input type="submit" value="Proceed" name="ProceedFile" class="btn btn-warning" />
-                                                        </div>
-                                                        <div class="col col-sm-3 ml-2">
-                                                            <input type="submit" value="No" name="ClearMessage" class="btn btn-primary" />
-                                                        </div>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <div class="row">
-                                                        <div class="alert alert-danger">
-                                                            <Strong>Error !</Strong> @TempData["ErrMessage"]
-                                                        </div>
-                                                    </div>
-                                                    if (TempData["showButton"] != null)
-                                                    {
-                                                        <div class="row">
-                                                            <input type="submit" value="Export Items" name="ExportItems" class="btn btn-primary" />
-                                                        </div>
-                                                    }
-                                                }
+                                                <div class="row">
+                                                    <input type="submit" value="Export Items" name="ExportItems" class="btn btn-primary" />
+                                                </div>
                                             }
                                         </div>
                                     </div>

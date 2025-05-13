@@ -16,5 +16,6 @@ namespace BRS.Models
         [DisplayFormat(DataFormatString = "{0:yyyy.MM}", ApplyFormatInEditMode = true)]
         public DateTime YMDate { get; set; }
         public HttpPostedFileBase file { get; set; }
+        public int action { get; set; }
     }
 }

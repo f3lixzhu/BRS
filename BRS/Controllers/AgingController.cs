@@ -55,7 +55,8 @@ namespace BRS.Controllers
                     {
                         dtAgingList = ds.Tables[0],
                         pager = new Pager((ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0) ? Convert.ToInt32(ds.Tables[1].Rows[0]["TotalRecords"]) : 0, 1, Convert.ToInt32(ConfigurationManager.AppSettings["PageSize"])),
-                        YMDate = DateTime.Now
+                        YMDate = DateTime.Now,
+                        action = 1
                     };
 
                     TempData["_aging"] = agingData;
@@ -185,7 +186,7 @@ namespace BRS.Controllers
                     TRANS_DA TransDA = new TRANS_DA();
                     int uploadRows = 0;
                     DataTable itemResult = new DataTable();
-                    string errMessage = TransDA.uploadAging(period, _fileExt, _path, LoginData.userId, true, out uploadRows, out itemResult);
+                    string errMessage = TransDA.uploadAging(aging.action, period, _fileExt, _path, LoginData.userId, true, out uploadRows, out itemResult);
                     if (errMessage.Length > 0)
                     {
                         TempData["_aging"] = aging;
@@ -217,46 +218,31 @@ namespace BRS.Controllers
 
         [HttpPost]
         [ButtonNameAction]
-        public ActionResult ProceedFile()
+        public ActionResult DeleteAging(FormCollection fc)
         {
             try
             {
-                AgingData aging = (AgingData)TempData.Peek("_aging");
+                string period = fc["Period"];
+                string location = fc["Location"].Trim();
+                string barcode = fc["Barcode"].Trim();
 
-                if (aging.file.ContentLength > 0)
-                {
-                    string period = aging.YMDate.ToString("yyyyMM");
-                    string _fileName = Path.GetFileName(aging.file.FileName);
-                    string _path = Path.Combine(Server.MapPath("~/UploadedFiles"), _fileName);
-                    aging.file.SaveAs(_path);
-                    string _fileExt = Path.GetExtension(_path);
-                    TRANS_DA TransDA = new TRANS_DA();
-                    int uploadRows = 0;
-                    DataTable itemResult = new DataTable();
-                    string errMessage = TransDA.uploadAging(period, _fileExt, _path, LoginData.userId, false, out uploadRows, out itemResult);
-                    if (errMessage.Length > 0)
-                    {
-                        TempData["_aging"] = aging;
-                        TempData["ItemResult"] = itemResult;
-                        throw new Exception(errMessage);
-                    }
+                TRANS_DA transDA = new TRANS_DA();
+                string errMessage = transDA.deleteAging(period, location, barcode, LoginData.userId);
+                if (errMessage.Length > 0)
+                    throw new Exception(errMessage);
 
-                    TempData["_aging"] = aging;
-                    TempData["suc"] = $"Aging Uploaded Successfully, {uploadRows} processed";
-                }
-
-                return RedirectToAction("Index", "Aging", new { actions = "UploadFile" });
+                TempData["Suc"] = "Aging deleted successfully";
             }
             catch (Exception ex)
             {
-                TempData["ErrMessage"] = $"File upload failed!! {ex.Message}";
-                TempData["show"] = 1;
-
-                if (ex.Message.Substring(0, 5) == "Found")
-                    TempData["showButton"] = 1;
-
-                return RedirectToAction("Index", "Aging", new { actions = "UploadFile" });
+                int maxLength = 120;
+                if (ex.Message.Length > maxLength)
+                    TempData["err"] = ex.Message.Substring(0, maxLength);
+                else
+                    TempData["err"] = ex.Message;
             }
+
+            return RedirectToAction("Index", "Aging", new { actions = "Delete" });
         }
 
         [HttpPost]
@@ -267,7 +253,7 @@ namespace BRS.Controllers
             {
                 DataTable dt = (DataTable)TempData["ItemResult"];
                 string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                string fileName = "ItemsNotInMaster_" + DateTime.Now.ToString("dd-MM-yyyy") + ".xlsx";
+                string fileName = "ItemsResult_" + DateTime.Now.ToString("dd-MM-yyyy") + ".xlsx";
 
                 using (XLWorkbook wb = new XLWorkbook())
                 {
@@ -281,14 +267,6 @@ namespace BRS.Controllers
             }
 
             return RedirectToAction("Index", "Aging", new { actions = "Export" });
-        }
-
-        [HttpPost]
-        [ButtonNameAction]
-        public ActionResult ClearMessage()
-        {
-            TempData["show"] = 1;
-            return RedirectToAction("Index", "Aging", new { actions = "ClearMessage" });
         }
 
         public ActionResult Download()

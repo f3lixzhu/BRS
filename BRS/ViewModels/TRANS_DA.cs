@@ -253,7 +253,45 @@ namespace BRS.ViewModels
             return result;
         }
 
-        public virtual string uploadAging(string period, string _fileExt, string _path, string auditUserName, bool ceklocations, out int uploadRows, out DataTable itemResult)
+        public virtual DataTable GetExistingAging(string period, DataTable dt)
+        {
+            SqlDataAdapter adapter = new SqlDataAdapter();
+            DataSet ds = new DataSet();
+            using (SqlCommand command = new SqlCommand("dbo.GetExistingAging", CnLocal))
+            {
+                command.Parameters.AddWithValue("period", period);
+                command.Parameters.AddWithValue("agingInv", dt).SqlDbType = SqlDbType.Structured;
+                command.CommandType = CommandType.StoredProcedure;
+                CnLocal.Open();
+
+                adapter.SelectCommand = command;
+                adapter.Fill(ds, "ItemsData");
+                CnLocal.Close();
+            }
+
+            return ds.Tables[0];
+        }
+
+        public virtual DataTable GetNonExistingAging(string period, DataTable dt)
+        {
+            SqlDataAdapter adapter = new SqlDataAdapter();
+            DataSet ds = new DataSet();
+            using (SqlCommand command = new SqlCommand("dbo.GetNonExistingAging", CnLocal))
+            {
+                command.Parameters.AddWithValue("period", period);
+                command.Parameters.AddWithValue("agingInv", dt).SqlDbType = SqlDbType.Structured;
+                command.CommandType = CommandType.StoredProcedure;
+                CnLocal.Open();
+
+                adapter.SelectCommand = command;
+                adapter.Fill(ds, "ItemsData");
+                CnLocal.Close();
+            }
+
+            return ds.Tables[0];
+        }
+
+        public virtual string uploadAging(int action, string period, string _fileExt, string _path, string auditUserName, bool ceklocations, out int uploadRows, out DataTable itemResult)
         {
             string errMessage = string.Empty;
             string connStr = string.Empty;
@@ -296,19 +334,6 @@ namespace BRS.ViewModels
                     OleDbCommand command;
                     OleDbDataAdapter da;
 
-                    if (ceklocations)
-                    {
-                        //cek locations is exists
-                        DataTable dt = new DataTable();
-                        s_excel_sql = $"SELECT DISTINCT LOCATION FROM [{System.IO.Path.GetFileNameWithoutExtension(s_table)}] WHERE ISNULL(RELEASE_DATE) = 0 and QUANTITY > 0";
-                        command = new OleDbCommand(s_excel_sql, conn);
-                        da = new OleDbDataAdapter(command);
-                        da.Fill(dt);
-                        int result = isAgingExists(period, dt);
-                        if (result == 1)
-                            throw new Exception("CONFIRM");
-                    }
-
                     //cek release date is null
                     s_excel_sql = $"SELECT * FROM [{System.IO.Path.GetFileNameWithoutExtension(s_table)}] WHERE ISNULL(RELEASE_DATE) < 0";
                     command = new OleDbCommand(s_excel_sql, conn);
@@ -334,15 +359,49 @@ namespace BRS.ViewModels
 
                         uploadRows = dtExcelData.Rows.Count;
 
-                        using (SqlCommand sqlcom = new SqlCommand("CreateAgingInventory", CnLocal))
+                        if (action == 1)
                         {
-                            sqlcom.CommandType = CommandType.StoredProcedure;
-                            sqlcom.Parameters.AddWithValue("period", period);
-                            sqlcom.Parameters.AddWithValue("agingInv", dtExcelData).SqlDbType = SqlDbType.Structured;
-                            sqlcom.Parameters.AddWithValue("auditUserName", auditUserName);
-                            CnLocal.Open();
-                            sqlcom.ExecuteScalar();
-                            CnLocal.Close();
+                            DataTable dt = GetExistingAging(period, dtExcelData);
+                            if (dt.Rows.Count == 0)
+                            {
+                                using (SqlCommand sqlcom = new SqlCommand("CreateAgingInventory", CnLocal))
+                                {
+                                    sqlcom.CommandType = CommandType.StoredProcedure;
+                                    sqlcom.Parameters.AddWithValue("period", period);
+                                    sqlcom.Parameters.AddWithValue("agingInv", dtExcelData).SqlDbType = SqlDbType.Structured;
+                                    sqlcom.Parameters.AddWithValue("auditUserName", auditUserName);
+                                    CnLocal.Open();
+                                    sqlcom.ExecuteScalar();
+                                    CnLocal.Close();
+                                }
+                            }
+                            else
+                            {
+                                itemResult = dt;
+                                throw new Exception($"Found {dt.Rows.Count} of {dtExcelData.Rows.Count} barcode existing in aging inventory");
+                            }
+                        }
+                        else
+                        {
+                            DataTable dt = GetNonExistingAging(period, dtExcelData);
+                            if (dt.Rows.Count == 0)
+                            {
+                                using (SqlCommand sqlcom = new SqlCommand("EditAgingInventory", CnLocal))
+                                {
+                                    sqlcom.CommandType = CommandType.StoredProcedure;
+                                    sqlcom.Parameters.AddWithValue("period", period);
+                                    sqlcom.Parameters.AddWithValue("agingInv", dtExcelData).SqlDbType = SqlDbType.Structured;
+                                    sqlcom.Parameters.AddWithValue("auditUserName", auditUserName);
+                                    CnLocal.Open();
+                                    sqlcom.ExecuteScalar();
+                                    CnLocal.Close();
+                                }
+                            }
+                            else
+                            {
+                                itemResult = dt;
+                                throw new Exception($"Found {dt.Rows.Count} of {dtExcelData.Rows.Count} barcode not found in aging inventory");
+                            }
                         }
                     }
                     else
@@ -449,6 +508,36 @@ namespace BRS.ViewModels
                 using (SqlCommand command = new SqlCommand("dbo.DeleteMsItem", CnLocal))
                 {
                     command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("Barcode", barcode);
+                    command.Parameters.AddWithValue("AuditUserName", auditUserName);
+                    command.CommandTimeout = 900;
+                    CnLocal.Open();
+                    command.ExecuteScalar();
+                }
+            }
+            catch (Exception ex)
+            {
+                errMessage = ex.Message;
+            }
+            finally
+            {
+                CnLocal.Close();
+            }
+
+            return errMessage;
+        }
+
+        public string deleteAging(string period, string location, string barcode, string auditUserName)
+        {
+            string errMessage = string.Empty;
+
+            try
+            {
+                using (SqlCommand command = new SqlCommand("dbo.DeleteAging", CnLocal))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("Period", period);
+                    command.Parameters.AddWithValue("Location", location);
                     command.Parameters.AddWithValue("Barcode", barcode);
                     command.Parameters.AddWithValue("AuditUserName", auditUserName);
                     command.CommandTimeout = 900;
