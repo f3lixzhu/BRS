@@ -19,7 +19,7 @@ namespace BRS.Models
 
         public class UserManagement
         {
-            public string userId { get; set; }
+            public string user_Id { get; set; }
             public string userName { get; set; }
             public string password { get; set; }
             public int brandId { get; set; }

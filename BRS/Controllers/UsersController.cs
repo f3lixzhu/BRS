@@ -94,7 +94,7 @@ namespace BRS.Controllers
         {
             try
             {
-                if (users.userId == null || users.userId == string.Empty)
+                if (users.user_Id == null || users.user_Id == string.Empty)
                     throw new Exception("Userid must be filled first!");
                 if (users.userName == null || users.userName == string.Empty)
                     throw new Exception("Username must be filled first!");
@@ -104,7 +104,7 @@ namespace BRS.Controllers
                     throw new Exception("Brand must be select first!");
 
                 //Check ada username yang double gk?
-                string where = string.Format("and US.UserId = '{0}'", users.userId);
+                string where = string.Format("and US.UserId = '{0}'", users.user_Id);
                 DataSet dsUserId = new DataSet();
                 USERS_DA usersDA = new USERS_DA();
 
@@ -117,7 +117,7 @@ namespace BRS.Controllers
                 else
                 {
                     //create master USER
-                    string errMessage = usersDA.insertMsUser(users.userId, users.userName, LOGIN_DA.Encrypt(users.password), users.brandId, "USERS");
+                    string errMessage = usersDA.insertMsUser(users.user_Id, users.userName, LOGIN_DA.Encrypt(users.password), users.brandId, "USERS");
                     if (errMessage.Length > 0)
                         throw new Exception(errMessage);
 
