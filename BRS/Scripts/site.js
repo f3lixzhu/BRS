@@ -26,7 +26,7 @@ function displayAlertError(str){
 
 function OpenModalPopUp() {
     var data = $(this).data("item");
-    document.getElementById("userId").value = data.split(";")[0];
+    document.getElementById("user_Id").value = data.split(";")[0];
     document.getElementById("userName").value = data.split(";")[1];
     document.getElementById("brandId").value = data.split(";")[2];
     $("#active").prop("checked", (data.split(";")[3] === 'True'));
