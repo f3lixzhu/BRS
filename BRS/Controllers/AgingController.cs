@@ -77,7 +77,10 @@ namespace BRS.Controllers
                     
                     agingData = bindGrid(page, agingData, searchField, searchValue, sortBy);
                     if (actions != "UploadFile" && agingData.dtAgingList.Rows.Count == 0)
-                        TempData["err"] = "Data tidak ditemukan!";
+                    {
+                        if (actions == "ItemSearch")
+                            TempData["err"] = "Data tidak ditemukan!";
+                    }
                 }
 
                 ViewBag.searchField = searchField;
@@ -163,7 +166,6 @@ namespace BRS.Controllers
         [ButtonNameAction]
         public ActionResult ClearFilter(AgingData aging)
         {
-            TempData["action"] = "ClearFilter";
             return RedirectToAction("Index", "Aging", new { actions = "ClearFilter" });
         }
 

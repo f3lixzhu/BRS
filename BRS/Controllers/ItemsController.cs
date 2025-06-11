@@ -83,7 +83,10 @@ namespace BRS.Controllers
 
                     itemData = bindGrid(page, itemData, searchField, searchValue, sortBy, _action);
                     if (actions != "UploadFile" && itemData.dtItemList.Rows.Count == 0)
-                        TempData["err"] = "Data tidak ditemukan!";
+                    {
+                        if (actions == "ItemSearch")
+                            TempData["err"] = "Data tidak ditemukan!";
+                    }
                 }
 
                 ViewBag.searchField = searchField;
@@ -212,7 +215,6 @@ namespace BRS.Controllers
         [ButtonNameAction]
         public ActionResult ClearFilter(ItemData items)
         {
-            TempData["action"] = "ClearFilter";
             return RedirectToAction("Index", "Items", new { actions = "ClearFilter" });
         }
 

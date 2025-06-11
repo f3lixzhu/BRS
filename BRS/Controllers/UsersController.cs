@@ -48,7 +48,6 @@ namespace BRS.Controllers
                         pager = new Pager((dsUser.Tables[1] != null && dsUser.Tables[1].Rows.Count > 0) ? Convert.ToInt32(dsUser.Tables[1].Rows[0]["TotalRecords"]) : 0, 1, Convert.ToInt32(ConfigurationManager.AppSettings["PageSize"]))
                     };
 
-                    TempData["action"] = "";
                     TempData["_user"] = usersData;
                 }
                 else
@@ -63,7 +62,10 @@ namespace BRS.Controllers
                 
                 usersData = userBindGrid(page, searchFieldUser, searchValueUser, usersData);
                 if (usersData.dtUserList.Rows.Count == 0)
-                    TempData["err"] = "Data tidak ditemukan!";
+                {
+                    if (actions == "UsersSearch")
+                        TempData["err"] = "Data tidak ditemukan!";
+                }
 
                 TRANS_DA TransDA = new TRANS_DA();
                 ViewBag.UserSearchSelectList = new SelectList(UserSearch.UserSearchDictionary, "Key", "Value");
@@ -84,7 +86,6 @@ namespace BRS.Controllers
         [ButtonNameAction]
         public ActionResult ClearFilter(UserLibrary.UserManagement users)
         {
-            TempData["action"] = "ClearFilter";
             return RedirectToAction("Index", "Users", new { actions = "ClearFilter" });
         }
 
