@@ -624,7 +624,7 @@
                 <TablixMember>
                   <Group Name="Breakdown">
                     <GroupExpressions>
-                      <GroupExpression>=Fields(Parameters!prmRowField.Value).Value</GroupExpression>
+                      <GroupExpression>=Fields!Barcode.Value</GroupExpression>
                     </GroupExpressions>
                   </Group>
                   <TablixHeader>
@@ -656,6 +656,7 @@
                           <PaddingBottom>2pt</PaddingBottom>
                         </Style>
                       </Textbox>
+                      <rd:Selected>true</rd:Selected>
                     </CellContents>
                   </TablixHeader>
                   <TablixMembers>
